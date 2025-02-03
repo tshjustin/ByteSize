@@ -9,9 +9,9 @@ interface NavigationProps {
 
 export default function Navigation({ activeTab, setActiveTab }: NavigationProps) {
   return (
-    <nav className="mb-8 flex space-x-2">
+    <nav className="mb-10 flex space-x-2">
       <Button variant={activeTab === "recent" ? "default" : "outline"} onClick={() => setActiveTab("recent")}>
-        Recent
+        Home
       </Button>
       <Button
         variant={activeTab === "breakthroughs" ? "default" : "outline"}
