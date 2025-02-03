@@ -11,6 +11,8 @@ export async function GET() {
     { id: "6", title: "Recent Paper 3", abstract: "This is a summary of recent paper 3", date: "2023-04-18" },
     { id: "7", title: "Recent Paper 4", abstract: "This is a summary of recent paper 4", date: "2023-04-15" },
     { id: "8", title: "Recent Paper 5", abstract: "This is a summary of recent paper 5", date: "2023-04-12" },
+    { id: "9", title: "Recent Paper 6", abstract: "This is a summary of recent paper 6", date: "2023-04-12" },
+    { id: "10", title: "Recent Paper 7", abstract: "This is a summary of recent paper 7", date: "2023-04-12" }
     // Add more papers here
   ]
 

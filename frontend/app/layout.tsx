@@ -7,8 +7,8 @@ import ThemeToggle from "@/components/ThemeToggle"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
-  title: "Research Paper Hub",
-  description: "A simple platform for browsing and reading research papers",
+  title: "ByteSize",
+  description: "Making Research Paper easier and more Byte Size",
 }
 
 export default function RootLayout({
@@ -22,7 +22,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <div className="min-h-screen">
             <header className="container mx-auto px-4 py-4 flex justify-between items-center">
-              <h1 className="text-2xl font-bold">Research Paper Hub</h1>
+              <h1 className="text-2xl font-bold">ByteSize</h1>
               <ThemeToggle />
             </header>
             {children}
