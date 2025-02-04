@@ -28,6 +28,9 @@ export default function TagFilter({ onFilterChange }: TagFilterProps) {
     category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Sort selected tags alphabetically
+  const sortedSelectedTags = [...selectedTags].sort((a, b) => a.localeCompare(b));
+
   const toggleTag = (tag: Category) => {
     const newSelectedTags = selectedTags.includes(tag)
       ? selectedTags.filter(t => t !== tag)
@@ -48,7 +51,7 @@ export default function TagFilter({ onFilterChange }: TagFilterProps) {
         <div className="flex-1 relative">
           <div className="flex items-center border rounded-lg bg-background dark:bg-gray-800 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
             <div className="flex-1 flex flex-wrap gap-2 p-2 min-h-10">
-              {selectedTags.map(tag => (
+              {sortedSelectedTags.map(tag => (
                 <span
                   key={tag}
                   className={`px-2 py-1 rounded-md text-xs font-medium flex items-center gap-1 ${CATEGORY_COLORS[tag]}`}
