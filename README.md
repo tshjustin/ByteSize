@@ -4,9 +4,9 @@ Making Academic Papers easier and more byte size to read
 
 ### Frontend Features 
 
-1. Add Search bar that shows present settings + FIltering 
+1. Add Search bar that shows present settings + FIltering ✔️
 
-2. Refactor const labels as there are duplicates 
+2. Refactor const labels as there are duplicates ✔️
 
 3. Hovering abstract logic 
 
@@ -17,9 +17,9 @@ Making Academic Papers easier and more byte size to read
 
 ### Backend 
 
-1. Storing of saved papers 
+1. Storing of saved papers ✔️ (Done with LocalStorage. KIV if need to shift to backend)
 
-2. Authenthication if requires by 1. 
+2. Authenthication if requires by 1. ✔️ (LocalStorage for Saved Papers)
 
 3. Scraping and packaging of pre-prints 
 
