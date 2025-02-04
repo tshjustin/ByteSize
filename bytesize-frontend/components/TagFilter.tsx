@@ -1,32 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Check, ChevronDown, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const categories = [
-  'AI', 'Machine Learning', 'Neural Networks', 'Data Science', 'Statistics',
-  'Python', 'Deep Learning', 'Computer Vision', 'NLP', 'Robotics'
-];
-
-const categoryColors = {
-  'AI': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-  'Machine Learning': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-  'Neural Networks': 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
-  'Data Science': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
-  'Statistics': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-  'Python': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300',
-  'Deep Learning': 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-300',
-  'Computer Vision': 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300',
-  'NLP': 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-300',
-  'Robotics': 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-300'
-};
+import { CATEGORIES, CATEGORY_COLORS, type Category } from "@/constants/categories";
 
 interface TagFilterProps {
-  onFilterChange: (selectedTags: string[]) => void;
+  onFilterChange: (selectedTags: Category[]) => void;
 }
 
 export default function TagFilter({ onFilterChange }: TagFilterProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<Category[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -41,11 +24,11 @@ export default function TagFilter({ onFilterChange }: TagFilterProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const filteredCategories = categories.filter(category =>
+  const filteredCategories = CATEGORIES.filter(category =>
     category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const toggleTag = (tag: string) => {
+  const toggleTag = (tag: Category) => {
     const newSelectedTags = selectedTags.includes(tag)
       ? selectedTags.filter(t => t !== tag)
       : [...selectedTags, tag];
@@ -54,7 +37,7 @@ export default function TagFilter({ onFilterChange }: TagFilterProps) {
     onFilterChange(newSelectedTags);
   };
 
-  const clearTag = (tag: string, e: React.MouseEvent) => {
+  const clearTag = (tag: Category, e: React.MouseEvent) => {
     e.stopPropagation();
     toggleTag(tag);
   };
@@ -68,7 +51,7 @@ export default function TagFilter({ onFilterChange }: TagFilterProps) {
               {selectedTags.map(tag => (
                 <span
                   key={tag}
-                  className={`px-2 py-1 rounded-md text-xs font-medium flex items-center gap-1 ${categoryColors[tag]}`}
+                  className={`px-2 py-1 rounded-md text-xs font-medium flex items-center gap-1 ${CATEGORY_COLORS[tag]}`}
                 >
                   {tag}
                   <button
@@ -122,7 +105,7 @@ export default function TagFilter({ onFilterChange }: TagFilterProps) {
                     <button
                       key={category}
                       className={`px-2 py-1.5 rounded-md text-xs font-medium flex items-center justify-between transition-all ${
-                        categoryColors[category]
+                        CATEGORY_COLORS[category]
                       } ${
                         selectedTags.includes(category) 
                           ? 'ring-2 ring-blue-500 ring-opacity-50' 

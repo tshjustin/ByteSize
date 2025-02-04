@@ -3,6 +3,7 @@ import PaperCard from "./PaperCard";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import TagFilter from "./TagFilter";
+import { type Category } from "@/constants/categories";
 
 interface Paper {
   id: string;
@@ -11,13 +12,13 @@ interface Paper {
   date: string;
   isHot: boolean;
   author?: string;
-  categories?: string[];
+  categories?: Category[];
 }
 
 export default function RecentPapers() {
   const [papers, setPapers] = useState<Paper[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<Category[]>([]);
   const papersPerPage = 6;
 
   useEffect(() => {
@@ -28,8 +29,8 @@ export default function RecentPapers() {
       const enrichedData = data.map(paper => ({
         ...paper,
         categories: paper.isHot 
-          ? ["AI", "Machine Learning", "Neural Networks"]
-          : ["Data Science", "Statistics", "Python"]
+          ? ["AI", "Machine Learning", "Neural Networks"] as Category[]
+          : ["Data Science", "Statistics", "Python"] as Category[]
       }));
       setPapers(enrichedData);
     }
@@ -41,12 +42,13 @@ export default function RecentPapers() {
     .filter(paper => paper.isHot)
     .slice(0, 3);
 
-  // Filter only recent papers based on selected tags
+  // Filter recent papers - must have ALL selected tags (AND operation)
   const filteredRecentPapers = papers
     .filter(paper => !paper.isHot)
     .filter(paper => {
       if (selectedTags.length === 0) return true;
-      return paper.categories?.some(category => selectedTags.includes(category));
+      // Paper must have ALL selected tags to be included
+      return selectedTags.every(tag => paper.categories?.includes(tag));
     })
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
@@ -61,9 +63,19 @@ export default function RecentPapers() {
     setCurrentPage(1);
   }, [selectedTags]);
 
+  // Calculate how many papers match each filter step
+  const totalRecentPapers = papers.filter(paper => !paper.isHot).length;
+  const matchCount = filteredRecentPapers.length;
+
   return (
     <div>
       <TagFilter onFilterChange={setSelectedTags} />
+      
+      {selectedTags.length > 0 && (
+        <div className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+          Showing {matchCount} out of {totalRecentPapers} papers matching all selected tags
+        </div>
+      )}
       
       {/* Trending section - always visible */}
       <h2 className="text-2xl font-semibold mb-4">Trending</h2>
@@ -119,7 +131,7 @@ export default function RecentPapers() {
         </>
       ) : (
         <div className="text-center text-gray-500 dark:text-gray-400 py-8">
-          No recent papers found matching the selected tags.
+          No recent papers found matching all selected tags.
         </div>
       )}
     </div>
