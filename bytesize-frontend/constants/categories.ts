@@ -1,6 +1,3 @@
-// constants/categories.ts
-
-// Categories are pre-sorted alphabetically
 export const CATEGORIES = [
   'AI',
   'Computer Vision',
