@@ -1,6 +1,9 @@
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Award } from "lucide-react";
+import { Award, Bookmark } from "lucide-react";
 import { CATEGORY_COLORS, type Category } from "@/constants/categories";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface PaperCardProps {
   id: string;
@@ -25,14 +28,77 @@ export default function PaperCard({
   author = "Author Name",
   categories = []
 }: PaperCardProps) {
-  // Sort categories alphabetically
+  const { toast } = useToast();
+  const [isSaved, setIsSaved] = useState(false);
   const sortedCategories = [...categories].sort((a, b) => a.localeCompare(b));
+
+  // Check if paper is saved on component mount
+  useEffect(() => {
+    const savedPapers = JSON.parse(localStorage.getItem('savedPapers') || '[]');
+    setIsSaved(savedPapers.some((paper: any) => paper.id === id));
+  }, [id]);
+
+  const toggleSave = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent Link navigation
+    e.stopPropagation();
+
+    const savedPapers = JSON.parse(localStorage.getItem('savedPapers') || '[]');
+    
+    if (isSaved) {
+      // Remove paper from saved papers
+      const updatedPapers = savedPapers.filter((paper: any) => paper.id !== id);
+      localStorage.setItem('savedPapers', JSON.stringify(updatedPapers));
+      // Dispatch custom event for real-time updates
+      window.dispatchEvent(new CustomEvent('savedPapersUpdate', {
+        detail: { papers: updatedPapers }
+      }));
+      setIsSaved(false);
+      toast({
+        title: "Paper removed",
+        description: "Paper has been removed from your saved papers",
+      });
+    } else {
+      // Add paper to saved papers
+      const paperToSave = {
+        id,
+        title,
+        abstract,
+        date,
+        isHot,
+        citations,
+        author,
+        categories
+      };
+      const updatedPapers = [...savedPapers, paperToSave];
+      localStorage.setItem('savedPapers', JSON.stringify(updatedPapers));
+      // Dispatch custom event for real-time updates
+      window.dispatchEvent(new CustomEvent('savedPapersUpdate', {
+        detail: { papers: updatedPapers }
+      }));
+      setIsSaved(true);
+      toast({
+        title: "Paper saved",
+        description: "Paper has been added to your saved papers",
+      });
+    }
+  };
 
   return (
     <Link href={`/paper/${id}`}>
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow h-[300px] flex flex-col relative">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow h-[300px] flex flex-col relative group">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity"
+          onClick={toggleSave}
+        >
+          <Bookmark 
+            className={`h-5 w-5 ${isSaved ? 'fill-current' : ''}`} 
+          />
+        </Button>
+
         <div className="flex justify-between items-start mb-2">
-          <h2 className="text-xl font-semibold line-clamp-2">{title}</h2>
+          <h2 className="text-xl font-semibold line-clamp-2 pr-8">{title}</h2>
           {showCitations && <Award className="w-5 h-5 text-yellow-500 shrink-0" />}
         </div>
         
