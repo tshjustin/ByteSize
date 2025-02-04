@@ -14,12 +14,12 @@ export default function SearchBar({
   className = "" 
 }: SearchBarProps) {
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative w-full max-w-3xl ${className}`}>
       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
       <Input
         type="text"
         placeholder={placeholder}
-        className="pl-9 w-full"
+        className="pl-9 w-full h-11"
         onChange={(e) => onSearch(e.target.value)}
       />
     </div>
