@@ -28,3 +28,16 @@ Making Academic Papers easier and more byte size to read
 5. API Endpoints + Payload 
 
 6. Refactoring of frontend acceptances
+
+
+Flow: 
+
+1. Try API calling and schema 
+
+2. Summarization and packaging. Database choice if needed
+
+3. Packaging of payload to send to FE 
+
+4. API set ups
+
+5. Sockets if needed 
