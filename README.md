@@ -2,35 +2,39 @@
 Making Academic Papers easier and more byte size to read 
 
 
-### Frontend Features 
+### Requirements - Frontend  
 
-1. Add Search bar that shows present settings + FIltering ✔️
+F1. Add Search bar that shows present settings + FIltering ✔️
 
-2. Refactor const labels as there are duplicates ✔️
+F2. Refactor const labels as there are duplicates ✔️
 
-3. Hovering abstract logic 
+F3. Hovering abstract logic 
 
-4. Colour scheme + UI/UX 
+F4. Colour scheme + UI/UX 
 
-5. User Experience 
+F5. User Experience 
 
+### Requirements - Backend 
 
-### Backend (Postgres, FastAPI, celery, llamaindex? )
+F1: Papers are scraped 00:00 each day and refreshes the feed. Scraped papers are saved into the database at the same time.
 
-1. Storing of saved papers ✔️ (Done with LocalStorage. KIV if need to shift to backend)
+F2: Saved Papers are stored in the database, holding up to <?> time worth of data. 
 
-2. Authenthication if requires by 1. ✔️ (LocalStorage for Saved Papers)
+F2.1: If a Paper is saved by the User, then it would be persistently stored on LS, rather than backend
 
-3. Scraping and packaging of pre-prints 
+F2.2: Breakthrough papers are saved permenantly on the backend server. This ensures the papers are saved beyond <?> time. 
 
-4. LLM Summarization of abstracts in easier format  (Microservice)
+F3: Users can be perform 2 search: [Manual] Search / [Filter] Search
 
-5. API Endpoints + Payload 
+F3.1: [Manual] Search: Leverages on Arxiv API calls - Ensure comprehensivness such that it handles either 1. Title inputs 2. Author Name inputs 3. Categorical inputs etc .. 
 
-6. Refactoring of frontend acceptances
+F3.2: [Filter] Search: Leverages on daily updated search 
 
+F4: Abstracts / Summary of papers are made to more byte size for easier reading 
 
-Flow: 
+F5: Packaging of endpoint payloads such that above are satisfied.
+
+### Flow: 
 
 1. Try API calling and schema 
 
