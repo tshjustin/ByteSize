@@ -15,7 +15,7 @@ Making Academic Papers easier and more byte size to read
 5. User Experience 
 
 
-### Backend 
+### Backend (Postgres, FastAPI, celery, llamaindex? )
 
 1. Storing of saved papers ✔️ (Done with LocalStorage. KIV if need to shift to backend)
 
