@@ -4,17 +4,13 @@ import requests
 from typing import List, Dict
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
+from settings import BASE_URL, CATEGORIES
 
-BASE_URL = 'http://export.arxiv.org/api/query?'
-
-CATEGORIES = ['cs.AI', 'cs.CL', 'cs.CV', 'cs.LG', 'cs.MA', 'cs.NE'] 
-
-def fetch_recent_papers(CATEGORIES: List[str], days_back: int = 1) -> List[Dict]:
+def fetch_recent_papers(days_back: int = 1) -> List[Dict]:
     """
     Fetches papers from specified categories published the previous day.
     
     Args:
-        categories: List of arXiv categories 
         days_back: Look back days 
     
     Returns:
