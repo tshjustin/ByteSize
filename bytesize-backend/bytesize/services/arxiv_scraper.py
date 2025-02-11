@@ -5,7 +5,10 @@ import requests
 from typing import List, Dict
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
+from bytesize.logging_config import setup_logging
 from bytesize.services.settings import BASE_URL, CATEGORIES
+
+logger = setup_logging()
 
 def fetch_recent_papers(days_back: int = 1) -> List[Dict]:
     """
@@ -43,13 +46,14 @@ def fetch_recent_papers(days_back: int = 1) -> List[Dict]:
                     'categories': categories
                 }
                 papers.append(paper)
+                logger.info(f"Fetched {len(papers)} Papers")
+
         return papers
         
     except Exception as e:
         print(f"Error: {str(e)}")
         return []
     
-
 if __name__ == "__main__": 
     data = fetch_recent_papers()
     print(data[0])

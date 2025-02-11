@@ -3,11 +3,11 @@
 import os
 import logging
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, inspect
 from bytesize.database.paper import Base
+from sqlalchemy import create_engine, inspect
+from bytesize.logging_config import setup_logging
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = setup_logging()
 
 def init_dev_db():
     """Initialize database only if tables don't exist."""
@@ -31,10 +31,10 @@ def init_dev_db():
     existing_tables = set(tables)
     
     if not required_tables.issubset(existing_tables):
-        logger.info("Some tables are missing. Creating database schema...")
+        logger.info("Table Missing")
         try:
             Base.metadata.create_all(bind=engine)
-            logger.info("Database schema created successfully!")
+            logger.info("Database schema created")
         except Exception as e:
             logger.error(f"Failed to create database schema: {e}")
             raise
