@@ -1,7 +1,7 @@
-from datetime import datetime 
-from typing import List, Optional
+from typing import List
 from sqlalchemy.orm import Session
 from bytesize.models.paper import Paper 
+from datetime import datetime, timedelta
 
 def create_paper(
         db: Session, id: int, title: str, authors: List[str], 
@@ -11,11 +11,15 @@ def create_paper(
     """
     Creates an instance of a paper in the database 
     """
+
+    # Parse string from API output 
+    published_dt = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
+
     new_paper = Paper(
         id=id,
         title=title,
         authors=authors,
-        published=published,
+        published=published_dt,
         summary=summary,
         layman_summary=layman_summary,
         link=link,
@@ -26,19 +30,25 @@ def create_paper(
     db.refresh(new_paper)
     return new_paper
 
-def get_all_papers(db: Session, lookback: int) -> List[Paper]:
+def get_papers_last_x_days(db: Session, days: int = 1) -> List[Paper]:
     """
-    Retrieves Papers that are of <x> days old 
+    Retrieves papers published within the last <days> days
     """
-    return db.query(Paper).all()
+    cutoff_date = datetime.utcnow() - timedelta(days=days)
+    return db.query(Paper).filter(Paper.published >= cutoff_date).all()
 
 
-def delete_paper(db: Session, paper_id: int) -> Optional[Paper]:
+def delete_paper(db: Session, days_old: int = 60) -> int:
     """
-    Deletes papers that are <y> days old 
+    Deletes papers that are older than <days_old> days 
     """
-    paper = db.query(Paper).filter(Paper.id == paper_id).first()
-
-    db.delete(paper)
+    cutoff_date = datetime.utcnow() - timedelta(days=days_old)
+    papers_to_delete = db.query(Paper).filter(Paper.published < cutoff_date).all()
+    
+    deleted_count = len(papers_to_delete)
+    for paper in papers_to_delete:
+        db.delete(paper)
+    
     db.commit()
-    return paper
+    return deleted_count
+
