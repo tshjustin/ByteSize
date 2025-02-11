@@ -1,6 +1,6 @@
 from typing import List
 from sqlalchemy.orm import Session
-from bytesize.models.paper import Paper 
+from bytesize.database.paper import Paper 
 from datetime import datetime, timedelta
 
 def create_paper(
@@ -51,4 +51,3 @@ def delete_paper(db: Session, days_old: int = 60) -> int:
     
     db.commit()
     return deleted_count
-

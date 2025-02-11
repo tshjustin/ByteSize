@@ -6,13 +6,13 @@ from sqlalchemy import Column, Integer, String, ARRAY, DateTime
 Base = declarative_base()
 
 class Paper(Base):
-    __tablename__ = "papers"
+    __tablename__ = "Papers"
     
     id = Column(Integer, primary_key=True)
     title = Column(String)
     authors = Column(ARRAY(String))
     published = Column(DateTime)
     summary = Column(String)
-    layman_summary = Column(String)
+    layman_summary = Column(String, nullable=True)
     link = Column(String)
     categories = Column(ARRAY(String))

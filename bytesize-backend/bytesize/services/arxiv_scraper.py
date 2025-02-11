@@ -1,10 +1,11 @@
 """Performs Daily Scraps for certain categories of Papers"""
 
+import re 
 import requests
 from typing import List, Dict
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
-from settings import BASE_URL, CATEGORIES
+from bytesize.services.settings import BASE_URL, CATEGORIES
 
 def fetch_recent_papers(days_back: int = 1) -> List[Dict]:
     """
@@ -37,7 +38,7 @@ def fetch_recent_papers(days_back: int = 1) -> List[Dict]:
                     'authors': [author.find('.//{http://www.w3.org/2005/Atom}name').text 
                             for author in entry.findall('.//{http://www.w3.org/2005/Atom}author')],
                     'published': entry.find('.//{http://www.w3.org/2005/Atom}published').text,
-                    'summary': entry.find('.//{http://www.w3.org/2005/Atom}summary').text.strip(),
+                    'summary': re.sub(r'\n', ' ', entry.find('.//{http://www.w3.org/2005/Atom}summary').text.strip()),
                     'link': entry.find('.//{http://www.w3.org/2005/Atom}id').text,
                     'categories': categories
                 }
