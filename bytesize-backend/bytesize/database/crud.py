@@ -4,7 +4,7 @@ from bytesize.database.paper import Paper
 from datetime import datetime, timedelta
 
 def create_paper(
-        db: Session, id: int, title: str, authors: List[str], 
+        db: Session, title: str, authors: List[str], 
         published: datetime, summary: str, layman_summary: str, 
         link: str, categories: List[str]
         ) -> Paper:
@@ -16,7 +16,6 @@ def create_paper(
     published_dt = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
 
     new_paper = Paper(
-        id=id,
         title=title,
         authors=authors,
         published=published_dt,
