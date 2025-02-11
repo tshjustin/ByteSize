@@ -1,24 +1,14 @@
 """Database connection configuration with connection pooler setup."""
 
-import os
 from typing import Generator
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from .init_db import init_dev_db
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import sessionmaker, Session
 
 load_dotenv(override=True)
 
-DATABASE_URL = os.getenv("SUPABASE_DATABASE_URL")
-
-engine = create_engine(
-    DATABASE_URL,
-    pool_size=5,              # Reduced pool size for better resource management
-    max_overflow=10,          # Maximum number of connections that can be created beyond pool_size
-    pool_timeout=30,          # Seconds to wait before giving up on getting a connection
-    pool_recycle=3600,        # Recycle connections after 1 hour to prevent stale connections
-    pool_pre_ping=True        # Verify connection is still valid before using it
-)
+engine = init_dev_db()
 
 SessionLocal = sessionmaker(
     autocommit=False,

@@ -35,7 +35,7 @@ def main():
                 except Exception as e:
                     print(f"Failed to store paper '{paper_data.get('title', 'Unknown')}': {str(e)}")
     else:
-        print("No papers found.")
+        print("No papers found")
 
 if __name__ == "__main__":
     main()
