@@ -1,7 +1,7 @@
 """Data model class for POSTGRES"""
 
-from sqlalchemy import Column, Integer, String, ARRAY, DateTime
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, ARRAY, DateTime
 
 Base = declarative_base()
 
@@ -13,5 +13,6 @@ class Paper(Base):
     authors = Column(ARRAY(String))
     published = Column(DateTime)
     summary = Column(String)
+    layman_summary = Column(String)
     link = Column(String)
     categories = Column(ARRAY(String))

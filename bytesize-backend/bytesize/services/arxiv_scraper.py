@@ -47,3 +47,8 @@ def fetch_recent_papers(days_back: int = 1) -> List[Dict]:
     except Exception as e:
         print(f"Error: {str(e)}")
         return []
+    
+
+if __name__ == "__main__": 
+    data = fetch_recent_papers()
+    print(data[0])
