@@ -1,7 +1,6 @@
 """Database initialization for development - KIV Extention for production"""
 
 import os
-import logging
 from dotenv import load_dotenv
 from bytesize.database.paper import Base
 from sqlalchemy import create_engine, inspect

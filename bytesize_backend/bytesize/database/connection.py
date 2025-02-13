@@ -2,9 +2,9 @@
 
 from typing import Generator
 from dotenv import load_dotenv
-from .init_db import init_dev_db
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import sessionmaker, Session
+from bytesize.database.init_db import init_dev_db
 
 load_dotenv(override=True)
 

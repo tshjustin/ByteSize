@@ -14,7 +14,12 @@ def fetch_recent_papers(days_back: int = 1) -> List[Dict]:
     """
     Scraps selected categories of papers for the new day.
     """
-    start_date = (datetime.now() - timedelta(days=days_back)).strftime('%Y%m%d')
+    now = datetime.now()
+
+    start_date = (now- timedelta(days=days_back)).strftime('%Y%m%d')
+
+    logger.info(f" Current Searchtime: {now.strftime('%Y-%m-%d %H:%M:%S')}")
+    logger.info(f" Searching for papers from date: {start_date}")
     
     search_query = f"({' OR '.join(f'cat:{cat}' for cat in CATEGORIES)}) AND submittedDate:[{start_date}0000 TO {start_date}2359]"
     
@@ -46,7 +51,8 @@ def fetch_recent_papers(days_back: int = 1) -> List[Dict]:
                     'categories': categories
                 }
                 papers.append(paper)
-                logger.info(f"Fetched {len(papers)} Papers")
+
+        logger.info(f" Fetched {len(papers)} Papers")
 
         return papers
         
@@ -56,4 +62,4 @@ def fetch_recent_papers(days_back: int = 1) -> List[Dict]:
     
 if __name__ == "__main__": 
     data = fetch_recent_papers()
-    print(data[0])
+    print(data[0]) # python -m bytesize.services.arxiv_scraper
