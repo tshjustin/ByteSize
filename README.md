@@ -22,7 +22,7 @@ F2: Saved Papers are stored in the database, holding up to <?> time worth of dat
 
 F2.1: If a Paper is saved by the User, then it would be persistently stored on LS, rather than backend ✔️
 
-F2.2: Breakthrough papers are saved permenantly on the backend server. This ensures the papers are saved beyond <?> time. (Fetch Breakthroughs First)
+F2.2: Breakthrough papers are saved permenantly on the backend server. This ensures the papers are saved beyond <?> time. (Fetch Breakthroughs First) ✔️
 
 F3: Users can be perform 2 search: [Manual] Search / [Filter] Search
 
@@ -34,14 +34,15 @@ F4: Abstracts / Summary of papers are made to more byte size for easier reading
 
 F5: Packaging of endpoint payloads such that above are satisfied.
 
-### Flow: 
+### To do: 
 
-1. Try API calling and schema ✔️
+1. Refactoring of FE 
 
-2. Summarization and packaging. Database choice if needed 
 
-3. Packaging of payload to send to FE 
+2. Celery Logic
 
-4. API set ups
 
-5. Sockets if needed 
+3. Packaging of payload / Search 
+
+
+4. Summarizer 
