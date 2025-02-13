@@ -9,10 +9,10 @@ class Paper(Base):
     __tablename__ = "Papers"
     
     title = Column(String, primary_key=True)
-    authors = Column(ARRAY(String))
-    published = Column(DateTime)
-    summary = Column(String)
+    authors = Column(ARRAY(String), nullable=True)
+    published = Column(DateTime, nullable=True)
+    summary = Column(String, nullable=True)
     layman_summary = Column(String, nullable=True)
-    link = Column(String)
-    categories = Column(ARRAY(String))
+    link = Column(String, nullable=True)
+    categories = Column(ARRAY(String), nullable=True)
     citations = Column(Integer, nullable=True)

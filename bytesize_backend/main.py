@@ -1,10 +1,12 @@
 from bytesize.database.crud import create_paper
 from bytesize.database.connection import get_db
-from bytesize.services.arxiv_scraper import fetch_recent_papers
+from bytesize.services.arxiv import fetch_recent_papers
+from bytesize.services.semantic_scholar import fetch_popular_papers
 
 def main():
 
     data = fetch_recent_papers(days_back=1)  
+    # data = fetch_popular_papers()
   
     if data:
 
@@ -15,7 +17,7 @@ def main():
                     title = paper_data.get('title')
                     authors = paper_data.get('authors')
                     published = paper_data.get('published')
-                    summary = paper_data.get('summary')
+                    summary = paper_data.get('summary', '')
                     layman_summary = paper_data.get('layman_summary', '')  
                     link = paper_data.get('link')
                     categories = paper_data.get('categories')

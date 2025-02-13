@@ -1,5 +1,7 @@
 BASE_URL = 'http://export.arxiv.org/api/query?'
 
+SEMANTIC_SCHOLAR_URL = 'http://api.semanticscholar.org/graph/v1/paper/search/bulk'
+
 CATEGORY_DESCRIPTIONS = {
    'cs.AI': 'Artificial Intelligence',
    'cs.CL': 'Computation and Language - NLP',
