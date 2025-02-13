@@ -15,3 +15,4 @@ class Paper(Base):
     layman_summary = Column(String, nullable=True)
     link = Column(String)
     categories = Column(ARRAY(String))
+    citations = Column(Integer, nullable=True)

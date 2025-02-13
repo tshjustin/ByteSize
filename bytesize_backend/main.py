@@ -19,6 +19,7 @@ def main():
                     layman_summary = paper_data.get('layman_summary', '')  
                     link = paper_data.get('link')
                     categories = paper_data.get('categories')
+                    citations = paper_data.get('citations', 0)  
                     
                     # Create the paper entry in the database
                     create_paper(
@@ -29,7 +30,8 @@ def main():
                         summary=summary,
                         layman_summary=layman_summary,
                         link=link,
-                        categories=categories
+                        categories=categories,
+                        citations=citations
                     )
                     print(f"Paper '{title}' stored successfully.")
                 except Exception as e:

@@ -6,7 +6,7 @@ from bytesize.database.paper import Paper
 def create_paper(
         db: Session, title: str, authors: List[str], 
         published: datetime, summary: str, layman_summary: str, 
-        link: str, categories: List[str]
+        link: str, categories: List[str], citations: int
         ) -> Paper:
     """
     Creates an instance of a paper in the database 
@@ -22,7 +22,8 @@ def create_paper(
         summary=summary,
         layman_summary=layman_summary,
         link=link,
-        categories=categories
+        categories=categories,
+        citations=citations
     )
     db.add(new_paper)
     db.commit()
