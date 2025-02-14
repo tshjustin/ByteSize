@@ -23,7 +23,6 @@ def main():
                     categories = paper_data.get('categories')
                     citations = paper_data.get('citations', 0)  
                     
-                    # Create the paper entry in the database
                     create_paper(
                         db=db,
                         title=title,

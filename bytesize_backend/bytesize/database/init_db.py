@@ -38,7 +38,7 @@ def init_dev_db():
             logger.error(f"Failed to create database schema: {e}")
             raise
     else:
-        logger.info("Database schema already exists. Skipping initialization.")
+        logger.info("Database schema already exists. Skipping init.")
     
     return engine
 
