@@ -1,35 +1,36 @@
-import "./globals.css"
-import { Inter } from "next/font/google"
-import type React from "react"
-import ThemeProvider from "@/components/ThemeProvider"
-import ThemeToggle from "@/components/ThemeToggle"
+import './globals.css';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import { ThemeProvider } from '@/components/theme-provider';
+import { Navigation } from '@/components/navigation';
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ['latin'] });
 
-export const metadata = {
-  title: "ByteSize",
-  description: "Making Research Paper easier and more Byte Size",
-}
+export const metadata: Metadata = {
+  title: 'ByteSize - Research Paper Reader',
+  description: 'Discover and read research papers in a digestible format',
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          <div className="min-h-screen">
-            <header className="container mx-auto px-4 py-4 flex justify-between items-center">
-              <h1 className="text-2xl font-bold">ByteSize</h1>
-              <ThemeToggle />
-            </header>
-            {children}
+      <body className={inter.className}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className="min-h-screen flex flex-col">
+            <Navigation />
+            <main className="flex-1">{children}</main>
           </div>
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }
-
