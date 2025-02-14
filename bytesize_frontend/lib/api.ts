@@ -1,4 +1,5 @@
-// API endpoints for external paper search
+import { type Paper } from "@/hooks/use-saved-papers"
+
 export const EXTERNAL_API_ENDPOINTS = {
   arxiv: "https://api.example.com/arxiv/search",
   semanticScholar: "https://api.example.com/semantic-scholar/search"

@@ -14,7 +14,7 @@ const recentPapers = [
     id: "1",
     title: "Advances in Quantum Computing: A New Paradigm",
     authors: ["Jane Smith", "John Doe"],
-    categories: ["Neural Networks", "Computer Vision", "MLOps"],
+    categories: ["Neural Networks", "Computer Vision", "MLOps"] as CategoryType[], 
     abstract: "This paper explores recent breakthroughs in quantum computing, including advancements in quantum error correction, quantum circuit optimization, and the development of new quantum algorithms. The research demonstrates significant improvements in quantum coherence times and gate fidelities.",
     publishedDate: "2024-03-20",
     detailedSummary: "This comprehensive study delves into the latest advancements in quantum computing, focusing on three key areas: error correction, circuit optimization, and algorithm development. The research team achieved a 50% reduction in decoherence rates through novel error correction techniques and demonstrated a 3x improvement in quantum circuit efficiency. The paper also introduces a new quantum algorithm for molecular simulation that outperforms classical methods by an order of magnitude.",
@@ -25,7 +25,7 @@ const recentPapers = [
     id: "2",
     title: "Machine Learning in Healthcare: Predictive Analytics",
     authors: ["Alice Johnson", "Bob Wilson"],
-    categories: ["LLM", "Ethics"],
+    categories: ["LLM", "Ethics"] as CategoryType[],
     abstract: "An examination of machine learning applications in healthcare, focusing on early disease detection, patient outcome prediction, and personalized treatment recommendations. The study presents novel approaches to handling medical data privacy and bias mitigation in healthcare AI systems.",
     publishedDate: "2024-03-19",
     detailedSummary: "This research paper presents a comprehensive framework for implementing machine learning in healthcare settings while maintaining patient privacy and ensuring ethical use of data. The study demonstrates a 40% improvement in early disease detection rates and a 25% increase in treatment efficacy through personalized recommendations. The researchers also developed new techniques for identifying and mitigating bias in healthcare AI systems.",
@@ -36,7 +36,7 @@ const recentPapers = [
     id: "3",
     title: "Sustainable Energy Solutions for Urban Development",
     authors: ["Maria Garcia", "David Chen"],
-    categories: ["Finetuning", "NLP"],
+    categories: ["Finetuning", "NLP"] as CategoryType[],
     abstract: "Investigating renewable energy implementation in cities, with a focus on smart grid integration, energy storage solutions, and demand response systems. The research provides comprehensive analysis of urban energy consumption patterns and optimization strategies.",
     publishedDate: "2024-03-18",
     detailedSummary: "The paper presents a detailed analysis of renewable energy integration in urban environments, showcasing successful implementations across five major cities. Key findings include a 30% reduction in peak energy demand through smart grid systems and a 45% improvement in energy storage efficiency. The research also provides a framework for optimizing energy distribution based on real-time consumption patterns.",
@@ -61,7 +61,7 @@ export default function Home() {
   const filteredPapers = recentPapers.filter(paper => 
     selectedCategories.length === 0 || 
     selectedCategories.every(category => 
-      paper.categories.includes(category as string)
+      paper.categories.includes(category)
     )
   )
 
