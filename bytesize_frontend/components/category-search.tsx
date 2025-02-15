@@ -72,7 +72,7 @@ export function CategorySearch({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between hover:bg-accent hover:text-accent-foreground active:scale-[0.98] transition-all duration-200"
+            className="w-full justify-start hover:bg-accent hover:text-accent-foreground active:scale-[0.98] transition-all duration-200"
           >
             <Search className="mr-2 h-4 w-4" />
             Search categories...
