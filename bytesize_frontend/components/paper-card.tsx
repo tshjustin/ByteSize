@@ -239,7 +239,11 @@ export function PaperCard({ paper, showCitations = false }: PaperCardProps) {
               <span className="mr-4">{paper.citations} citations</span>
             )}
             <time dateTime={paper.publishedDate} className="tabular-nums">
-              {new Date(paper.publishedDate).toLocaleDateString()}
+              {new Date(paper.publishedDate).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              })}
             </time>
           </div>
         </CardFooter>
