@@ -1,4 +1,3 @@
-// Define category types and their associated colors
 export const CATEGORIES = {
   "LLM": {
     color: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100",

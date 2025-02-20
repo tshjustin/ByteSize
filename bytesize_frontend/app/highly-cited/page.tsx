@@ -8,6 +8,7 @@ import { type CategoryType } from "@/lib/categories"
 import { motion, useScroll, useSpring, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { ArrowDownUp } from "lucide-react"
+import { generatePaperContextId } from "@/lib/utils"  // Add this import
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -175,22 +176,30 @@ export default function HighlyCited() {
           animate="show"
         >
           <AnimatePresence mode="popLayout">
-            {currentPapers.map((paper) => (
-              <motion.div
-                key={paper.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                layout
-                transition={{ 
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 25
-                }}
-              >
-                <PaperCard paper={paper} showCitations />
-              </motion.div>
-            ))}
+            {currentPapers.map((paper) => {
+              // Create a new paper object with context-specific ID
+              const contextPaper = {
+                ...paper,
+                id: generatePaperContextId(paper.id, 'highly-cited')
+              };
+              
+              return (
+                <motion.div
+                  key={contextPaper.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  layout
+                  transition={{ 
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 25
+                  }}
+                >
+                  <PaperCard paper={contextPaper} showCitations />
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
         </motion.div>
         {filteredAndSortedPapers.length === 0 ? (
