@@ -1,7 +1,7 @@
 from app.database.crud import create_paper
 from app.database.connection import get_db
-from app.arxiv import fetch_recent_papers
-from app.semantic_scholar import fetch_popular_papers
+from app.api.arxiv import fetch_recent_papers
+from app.api.semantic_scholar import fetch_popular_papers
 
 def main():
 
