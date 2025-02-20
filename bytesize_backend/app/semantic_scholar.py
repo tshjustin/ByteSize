@@ -1,8 +1,6 @@
-"""Scrapes for highly citated papers from Semantic Scholars"""
-
 import requests
 from typing import List, Dict
-from bytesize.services.settings import SEMANTIC_SCHOLAR_URL
+from app.config import SEMANTIC_SCHOLAR_URL
 
 def append_default_time(date_str: str) -> str:
     if date_str is None:

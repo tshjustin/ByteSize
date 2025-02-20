@@ -1,7 +1,7 @@
 from typing import List
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
-from bytesize.database.paper import Paper
+from app.database.paper import Paper
 
 def create_paper(
         db: Session, title: str, authors: List[str], 

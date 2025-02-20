@@ -1,7 +1,7 @@
-from bytesize.database.crud import create_paper
-from bytesize.database.connection import get_db
-from bytesize.services.arxiv import fetch_recent_papers
-from bytesize.services.semantic_scholar import fetch_popular_papers
+from app.database.crud import create_paper
+from app.database.connection import get_db
+from app.arxiv import fetch_recent_papers
+from app.semantic_scholar import fetch_popular_papers
 
 def main():
 
@@ -13,6 +13,7 @@ def main():
         with next(get_db()) as db: # tmp before FastAPI
 
             for paper_data in data:
+                print(paper_data)
                 try:
                     title = paper_data.get('title')
                     authors = paper_data.get('authors')

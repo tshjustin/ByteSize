@@ -1,12 +1,10 @@
-"""Performs Daily Scraps for certain categories of Papers"""
-
 import re 
 import requests
 from typing import List, Dict
+from logger import setup_logging
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
-from logging_config import setup_logging
-from bytesize.services.settings import BASE_URL, CATEGORIES
+from app.config import ARXIV_BASE_URL, CATEGORIES
 
 logger = setup_logging()
 
@@ -31,7 +29,7 @@ def fetch_recent_papers(days_back: int = 1) -> List[Dict]:
     }
 
     try:
-        response = requests.get(BASE_URL, params=params)
+        response = requests.get(ARXIV_BASE_URL, params=params)
         root = ET.fromstring(response.content)
         entries = root.findall('.//{http://www.w3.org/2005/Atom}entry')
         
