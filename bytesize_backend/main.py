@@ -5,7 +5,7 @@ from bytesize.services.semantic_scholar import fetch_popular_papers
 
 def main():
 
-    data = fetch_recent_papers(days_back=1)  
+    data = fetch_recent_papers(days_back=2)  
     # data = fetch_popular_papers()
   
     if data:

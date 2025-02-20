@@ -25,6 +25,8 @@ def create_paper(
         categories=categories,
         citations=citations
     )
+
+    #TODO: Check for existence of paper in DB due to edge cases of lookback_days = 1 not returning any papers, hence value=2 is needed 
     db.add(new_paper)
     db.commit()
     db.refresh(new_paper)

@@ -5,7 +5,7 @@ import requests
 from typing import List, Dict
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
-from bytesize.logging_config import setup_logging
+from logging_config import setup_logging
 from bytesize.services.settings import BASE_URL, CATEGORIES
 
 logger = setup_logging()

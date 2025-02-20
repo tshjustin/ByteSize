@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 from bytesize.database.paper import Base
 from sqlalchemy import create_engine, inspect
-from bytesize.logging_config import setup_logging
+from logging_config import setup_logging
 
 logger = setup_logging()
 
