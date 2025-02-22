@@ -10,9 +10,9 @@ F2. Refactor const labels as there are duplicates ✔️
 
 F3. Hovering abstract logic 
 
-F4. Colour scheme + UI/UX 
+F4. Colour scheme + UI/UX ✔️
 
-F5. User Experience 
+F5. User Experience ✔️
 
 ### Requirements - Backend 
 
@@ -30,19 +30,19 @@ F3.1: [Manual] Search: Leverages on Arxiv API calls - Ensure comprehensivness su
 
 F3.2: [Filter] Search: Leverages on daily updated search 
 
-F4: Abstracts / Summary of papers are made to more byte size for easier reading 
+F4: Abstracts / Summary of papers are made to more byte size for easier reading ✔️
 
 F5: Packaging of endpoint payloads such that above are satisfied.
 
 ### To do: 
 
-1. Refactoring of FE 
+1. Refactoring of FE ✔️
 
 
-2. Celery Logic
+2. Celery Logic (REMOVED) ✔️
 
 
 3. Packaging of payload / Search 
 
 
-4. Summarizer 
+4. Summarizer ✔️
