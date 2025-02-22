@@ -8,7 +8,7 @@ import { type CategoryType } from "@/lib/categories"
 import { motion, useScroll, useSpring, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { ArrowDownUp } from "lucide-react"
-import { generatePaperContextId } from "@/lib/utils"  // Add this import
+import { generatePaperContextId } from "@/lib/utils" 
 import {
   DropdownMenu,
   DropdownMenuContent,

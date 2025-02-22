@@ -14,7 +14,7 @@ import { Separator } from "@/components/ui/separator"
 interface PaperCardProps {
   paper: Paper
   showCitations?: boolean
-  onUnsave?: (paperId: string) => void // Add this prop
+  onUnsave?: (paperId: string) => void 
 }
 
 export function PaperCard({ paper, showCitations = false, onUnsave }: PaperCardProps) {
@@ -27,14 +27,13 @@ export function PaperCard({ paper, showCitations = false, onUnsave }: PaperCardP
     e.stopPropagation()
     if (isSaved) {
       removePaper(paper.id)
-      // Call the onUnsave callback if provided
+
       onUnsave?.(paper.id)
     } else {
       savePaper(paper)
     }
   }
 
-  // Rest of your PaperCard component remains the same...
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
