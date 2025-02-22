@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import { PaperCard } from "@/components/paper-card"
 import { useSavedPapers } from "@/hooks/use-saved-papers"
 import { useState } from "react"
@@ -11,17 +12,33 @@ const ITEMS_PER_PAGE = 9
 export default function Saved() {
   const { savedPapers } = useSavedPapers()
   const [currentPage, setCurrentPage] = useState(1)
+  const [localPapers, setLocalPapers] = useState(savedPapers)
   const { scrollYProgress } = useScroll()
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
     restDelta: 0.001
   })
+
+  // Update local papers when savedPapers changes
+  React.useEffect(() => {
+    setLocalPapers(savedPapers)
+  }, [savedPapers])
   
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
   const endIndex = startIndex + ITEMS_PER_PAGE
-  const currentPapers = savedPapers.slice(startIndex, endIndex)
-  const totalPages = Math.ceil(savedPapers.length / ITEMS_PER_PAGE)
+  const currentPapers = localPapers.slice(startIndex, endIndex)
+  const totalPages = Math.ceil(localPapers.length / ITEMS_PER_PAGE)
+
+  // Handle immediate removal from UI
+  const handleUnsave = (paperId: string) => {
+    setLocalPapers(prev => prev.filter(paper => paper.id !== paperId))
+    // Adjust current page if necessary
+    const newTotalPages = Math.ceil((localPapers.length - 1) / ITEMS_PER_PAGE)
+    if (currentPage > newTotalPages) {
+      setCurrentPage(Math.max(1, newTotalPages))
+    }
+  }
 
   const container = {
     hidden: { opacity: 0 },
@@ -48,7 +65,7 @@ export default function Saved() {
         >
           Saved Papers
         </motion.h1>
-        {savedPapers.length === 0 ? (
+        {localPapers.length === 0 ? (
           <motion.div 
             className="text-center py-12"
             initial={{ opacity: 0, y: 20 }}
@@ -77,12 +94,16 @@ export default function Saved() {
                     layout
                     transition={{ type: "spring", stiffness: 300, damping: 25 }}
                   >
-                    <PaperCard paper={paper} showCitations />
+                    <PaperCard 
+                      paper={paper} 
+                      showCitations 
+                      onUnsave={handleUnsave}
+                    />
                   </motion.div>
                 ))}
               </AnimatePresence>
             </motion.div>
-            {savedPapers.length > ITEMS_PER_PAGE && (
+            {localPapers.length > ITEMS_PER_PAGE && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

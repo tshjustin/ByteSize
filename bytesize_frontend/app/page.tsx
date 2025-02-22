@@ -8,6 +8,7 @@ import { ExternalSearch } from "@/components/external-search"
 import { type CategoryType } from "@/lib/categories"
 import { motion, useScroll, useSpring, AnimatePresence } from "framer-motion"
 import { Separator } from "@/components/ui/separator"
+import { generatePaperContextId } from "@/lib/utils"
 
 const recentPapers = [
   {
@@ -134,19 +135,27 @@ export default function Home() {
           initial="hidden"
           animate="show"
         >
-          {currentPapers.map((paper, index) => (
-            <motion.div
-              key={paper.id}
-              variants={item}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              whileHover={{ scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            >
-              <PaperCard paper={paper} />
-            </motion.div>
-          ))}
+          {currentPapers.map((paper, index) => {
+            // Create a new paper object with context-specific ID
+            const contextPaper = {
+              ...paper,
+              id: generatePaperContextId(paper.id, 'recent')
+            };
+            
+            return (
+              <motion.div
+                key={contextPaper.id}
+                variants={item}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
+                <PaperCard paper={contextPaper} />
+              </motion.div>
+            );
+          })}
         </motion.div>
         {filteredPapers.length === 0 ? (
           <motion.div 

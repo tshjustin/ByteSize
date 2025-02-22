@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -16,9 +14,10 @@ import { Separator } from "@/components/ui/separator"
 interface PaperCardProps {
   paper: Paper
   showCitations?: boolean
+  onUnsave?: (paperId: string) => void // Add this prop
 }
 
-export function PaperCard({ paper, showCitations = false }: PaperCardProps) {
+export function PaperCard({ paper, showCitations = false, onUnsave }: PaperCardProps) {
   const { isPaperSaved, savePaper, removePaper } = useSavedPapers()
   const isSaved = isPaperSaved(paper.id)
   const [isHovered, setIsHovered] = React.useState(false)
@@ -28,11 +27,14 @@ export function PaperCard({ paper, showCitations = false }: PaperCardProps) {
     e.stopPropagation()
     if (isSaved) {
       removePaper(paper.id)
+      // Call the onUnsave callback if provided
+      onUnsave?.(paper.id)
     } else {
       savePaper(paper)
     }
   }
 
+  // Rest of your PaperCard component remains the same...
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
@@ -46,7 +48,7 @@ export function PaperCard({ paper, showCitations = false }: PaperCardProps) {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <CardHeader className="flex-none space-y-3 pb-4">
+                <CardHeader className="flex-none space-y-3 pb-4">
           <div className="flex justify-between items-start gap-2">
             <CardTitle className="text-lg font-semibold leading-tight flex-grow line-clamp-2 group">
               <span className="bg-gradient-to-r from-primary to-primary bg-[length:0%_1px] group-hover:bg-[length:100%_1px] bg-no-repeat bg-left-bottom transition-all duration-500">
