@@ -3,9 +3,17 @@ from app.database.connection import get_db
 from app.api.arxiv import fetch_recent_papers
 from app.api.semantic_scholar import fetch_popular_papers
 
+
+# api points 
+
+
+
+
+# main async loop 
+
 def main():
 
-    data = fetch_recent_papers(days_back=2)  
+    data = fetch_recent_papers(days_back=3)  ## add a dedup for this just in case days = 2/3/4 dont work 
     # data = fetch_popular_papers()
   
     if data:
