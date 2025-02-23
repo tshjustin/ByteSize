@@ -5,8 +5,11 @@ import PyPDF2
 import requests
 from openai import OpenAI
 from dotenv import load_dotenv
+from logger import setup_logging
+
 
 load_dotenv()
+logger = setup_logging()
 
 OAI_KEY = os.getenv("OAI_KEY")
 
@@ -58,5 +61,22 @@ def simple_summary(content: str) -> str:
     return completion.choices[0].message.content 
 
 if __name__ == "__main__":
-    txt = extract_pdf_content("https://arxiv.org/abs/2502.13141v1")
-    print(simple_summary(txt))
+    from app.database.connection import get_db
+    from app.database.paper import Paper
+
+    # Update current DB 
+    with next(get_db()) as db:
+
+        papers = db.query(Paper).all()
+
+        for paper in papers:
+            if paper.link:
+                logger.info(f"Processing paper: {paper.title}")
+                content = extract_pdf_content(paper.link)
+                
+                summary = simple_summary(content)
+                paper.layman_summary = summary
+                db.commit()
+                logger.info(f"Successfully updated summary for: {paper.title}")
+
+        db.commit()
