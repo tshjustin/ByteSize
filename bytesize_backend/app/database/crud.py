@@ -39,6 +39,8 @@ def get_papers_last_x_days(db: Session, days: int = 1) -> List[Paper]:
     cutoff_date = datetime.utcnow() - timedelta(days=days)
     return db.query(Paper).filter(Paper.published >= cutoff_date).all()
 
+
+def 
 def get_popular_papers(db: Session) -> List[Paper]:
     pass 
 

@@ -28,7 +28,7 @@ def extract_pdf_content(url: str) -> None:
         
         text = ""
         for page_num in range(len(reader.pages)):
-            if re.search(r'\b(Conclusion)\b', reader.pages[page_num].extract_text(), re.IGNORECASE): # ignores capital cases. TODO: need a more extensive gating  
+            if re.search(r'\b(References)\b', reader.pages[page_num].extract_text(), re.IGNORECASE): # ignores capital cases. TODO: need a more extensive gating  
                 break
             
             else:
@@ -44,16 +44,21 @@ def simple_summary(content: str) -> str:
     """
     Takes in PDF message and returns a simple summarized paragraph of the paper
     """
+
+    safe_decode = content.encode('utf-8', 'ignore').decode('utf-8')
+
     completion = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{
             "role": "system", 
-            "content": "You are a helpful assistant that explains high level technical reports in layman terms. Ensure the output has 2 paragraphs, the \
-                        first paragraph is a layman abstraction, and the second can be longer that contains the methodology and results."
+            "content": "You are a helpful assistant that explains high level technical reports in layman terms." # dont need to line break inside a list 
+                        "Ensure the output has 2 paragraphs, the first paragraph is a layman abstraction."
+                        "THe second paragraph can be longer that contains the methodology and results. Also include explaining the methodology in simple terms." 
+                        "Do not include formatting such as **<Abstract>** / **<Methodology>**. "
             }, # set role of assistant 
             {
                 "role": "user",
-                "content": content 
+                "content": safe_decode 
             }
         ]
     )
