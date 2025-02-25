@@ -1,6 +1,6 @@
 import re 
 import requests
-from typing import List, Dict
+from typing import List, Dict, Optional
 from logger import setup_logging
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
@@ -30,34 +30,37 @@ def fetch_recent_papers(days_back: int = 1) -> List[Dict]:
 
     try:
         response = requests.get(ARXIV_BASE_URL, params=params)
-        root = ET.fromstring(response.content)
-        entries = root.findall('.//{http://www.w3.org/2005/Atom}entry')
-        
-        papers = []
-        for entry in entries:
-            categories = [cat.get('term') for cat in entry.findall('.//{http://www.w3.org/2005/Atom}category')]
-            
-            # Only include paper if all its categories are in CATEGORIES
-            if all(cat in CATEGORIES for cat in categories):
-                paper = {
-                    'title': entry.find('.//{http://www.w3.org/2005/Atom}title').text.strip(),
-                    'authors': [author.find('.//{http://www.w3.org/2005/Atom}name').text 
-                            for author in entry.findall('.//{http://www.w3.org/2005/Atom}author')],
-                    'published': entry.find('.//{http://www.w3.org/2005/Atom}published').text,
-                    'summary': re.sub(r'\n', ' ', entry.find('.//{http://www.w3.org/2005/Atom}summary').text.strip()),
-                    'link': entry.find('.//{http://www.w3.org/2005/Atom}id').text,
-                    'categories': categories
-                }
-                papers.append(paper)
-
-        logger.info(f" Fetched {len(papers)} Papers")
-
-        return papers
+        return arxiv_format(response)
         
     except Exception as e:
         print(f"Error: {str(e)}")
         return []
+
+def arxiv_format(response: requests.Response) -> List[Dict]: 
+    root = ET.fromstring(response.content)
+    entries = root.findall('.//{http://www.w3.org/2005/Atom}entry')
     
+    papers = []
+    for entry in entries:
+        categories = [cat.get('term') for cat in entry.findall('.//{http://www.w3.org/2005/Atom}category')]
+        
+        # Only include paper if all its categories are in CATEGORIES
+        if all(cat in CATEGORIES for cat in categories):
+            paper = {
+                'title': entry.find('.//{http://www.w3.org/2005/Atom}title').text.strip(),
+                'authors': [author.find('.//{http://www.w3.org/2005/Atom}name').text 
+                        for author in entry.findall('.//{http://www.w3.org/2005/Atom}author')],
+                'published': entry.find('.//{http://www.w3.org/2005/Atom}published').text,
+                'summary': re.sub(r'\n', ' ', entry.find('.//{http://www.w3.org/2005/Atom}summary').text.strip()),
+                'link': entry.find('.//{http://www.w3.org/2005/Atom}id').text,
+                'categories': categories
+            }
+            papers.append(paper)
+
+    logger.info(f" {len(papers)} papers from direct match")
+
+    return papers
+
 if __name__ == "__main__": 
     data = fetch_recent_papers()
     print(data[0]) # python -m bytesize.services.arxiv_scraper
