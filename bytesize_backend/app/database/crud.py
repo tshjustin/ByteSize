@@ -74,6 +74,6 @@ if __name__ == "__main__":
     from app.database.connection import get_db
 
     with next(get_db()) as db:
-        papers = get_papers_last_x_days(db, 10)
+        papers = get_papers(db, 10)
         for p in papers: 
             print(p) # paper objects 
