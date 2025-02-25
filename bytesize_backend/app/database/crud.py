@@ -1,4 +1,4 @@
-from typing import List, bool 
+from typing import List 
 from sqlalchemy.orm import Session
 from app.database.paper import Paper
 from datetime import datetime, timedelta
@@ -33,13 +33,17 @@ def create_paper(
         return new_paper
     return None 
 
-def get_papers_last_x_days(db: Session, days: int = 1) -> List[Paper]:
+def get_papers(db: Session, days: int = 1, cite: bool = False) -> List[Paper]:
     """
     Retrieves papers published within the last <days> days
     """
-    cutoff_date = datetime.utcnow() - timedelta(days=days)
-    return db.query(Paper).filter(Paper.published >= cutoff_date).all()
-
+    # recent papers 
+    if not cite: 
+        cutoff_date = datetime.utcnow() - timedelta(days=days)
+        return db.query(Paper).filter(Paper.published >= cutoff_date).all()
+    
+    # else return highly cited, where the citation count is not 0 
+    return db.query(Paper).filter(Paper.citations != 0).all()
 
 def check_paper(db: Session, url: str) -> bool: 
     """
@@ -51,9 +55,6 @@ def check_paper(db: Session, url: str) -> bool:
     is => Check if identify (memory matches) matches 
     """
     return db.query(Paper).filter_by(link=url).first() is None  
-
-def get_popular_papers(db: Session) -> List[Paper]:
-    pass 
 
 def delete_paper(db: Session, days_old: int = 60) -> int:
     """
@@ -68,3 +69,11 @@ def delete_paper(db: Session, days_old: int = 60) -> int:
     
     db.commit()
     return deleted_count
+
+if __name__ == "__main__":
+    from app.database.connection import get_db
+
+    with next(get_db()) as db:
+        papers = get_papers_last_x_days(db, 10)
+        for p in papers: 
+            print(p) # paper objects 

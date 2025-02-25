@@ -7,7 +7,6 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from logger import setup_logging
 
-
 load_dotenv()
 logger = setup_logging()
 
@@ -38,7 +37,6 @@ def extract_pdf_content(url: str) -> None:
 
     except Exception as e:
         print("Bad URL")
-
 
 def simple_summary(content: str) -> str:
     """

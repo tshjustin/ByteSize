@@ -107,8 +107,6 @@ def fuzzy_match_papers(query: str, max_results: int = 10) -> List[Dict] | None:
     logger.info(f" {len(filtered_results)} papers from fuzzy matching")
     return filtered_results
     
-
-
 if __name__ == "__main__":
     
     # regular search 
