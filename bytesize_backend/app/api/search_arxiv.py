@@ -1,10 +1,10 @@
 import re
 import requests
 from typing import List, Dict
-import xml.etree.ElementTree as ET
 from logger import setup_logging
+import xml.etree.ElementTree as ET
+from app.config import ARXIV_BASE_URL
 from app.api.arxiv import arxiv_format
-from app.config import ARXIV_BASE_URL, CATEGORIES
 
 logger = setup_logging()
 
