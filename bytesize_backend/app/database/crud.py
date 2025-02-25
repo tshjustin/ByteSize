@@ -1,13 +1,13 @@
-from typing import List
-from datetime import datetime, timedelta
+from typing import List, bool 
 from sqlalchemy.orm import Session
 from app.database.paper import Paper
+from datetime import datetime, timedelta
 
 def create_paper(
         db: Session, title: str, authors: List[str], 
         published: datetime, summary: str, layman_summary: str, 
         link: str, categories: List[str], citations: int
-        ) -> Paper:
+        ) -> Paper | None:
     """
     Creates an instance of a paper in the database 
     """
@@ -26,11 +26,12 @@ def create_paper(
         citations=citations
     )
 
-    #TODO: Check for existence of paper in DB due to edge cases of lookback_days = 1 not returning any papers, hence value=2 is needed 
-    db.add(new_paper)
-    db.commit()
-    db.refresh(new_paper)
-    return new_paper
+    if check_paper(db, link):
+        db.add(new_paper)
+        db.commit()
+        db.refresh(new_paper)
+        return new_paper
+    return None 
 
 def get_papers_last_x_days(db: Session, days: int = 1) -> List[Paper]:
     """
@@ -40,7 +41,17 @@ def get_papers_last_x_days(db: Session, days: int = 1) -> List[Paper]:
     return db.query(Paper).filter(Paper.published >= cutoff_date).all()
 
 
-def 
+def check_paper(db: Session, url: str) -> bool: 
+    """
+    Checks if a paper is already inside the database. 
+
+    Return True if paper dont exist 
+
+    db... => Returns query object 
+    is => Check if identify (memory matches) matches 
+    """
+    return db.query(Paper).filter_by(link=url).first() is None  
+
 def get_popular_papers(db: Session) -> List[Paper]:
     pass 
 
