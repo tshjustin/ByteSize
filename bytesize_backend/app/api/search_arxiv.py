@@ -108,7 +108,6 @@ def fuzzy_match_papers(query: str, max_results: int = 10) -> List[Dict] | None:
     return filtered_results
     
 if __name__ == "__main__":
-    
     # regular search 
     results = search_papers("Attention Is All You Need", 'title', 3)
 

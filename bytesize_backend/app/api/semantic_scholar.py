@@ -7,7 +7,6 @@ from app.config import ARXIV_BASE_URL
 from app.database.connection import get_db
 from app.config import SEMANTIC_SCHOLAR_URL
 
-
 def append_default_time(date_str: str) -> str:
     if date_str is None:
         return "2015-01-01T00:00:00Z" 
