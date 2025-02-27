@@ -25,4 +25,4 @@ services:
         fromService:
           type: web
           name: bytesize-backend
-          property: url
+          property: host
