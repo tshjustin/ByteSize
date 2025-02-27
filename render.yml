@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: bytesize-backend
+    env: docker
+    dockerfilePath: ./bytesize_backend/Dockerfile
+    dockerContext: ./bytesize_backend
+    plan: starter
+    region: singapore
+    healthCheckPath: /ping
+    envVars:
+      - key: SUPABASE_DATABASE_URL
+        sync: false
+      - key: OAI_KEY
+        sync: false
+
+  - type: web
+    name: bytesize-frontend
+    env: docker
+    dockerfilePath: ./bytesize_frontend/Dockerfile
+    dockerContext: ./bytesize_frontend
+    plan: starter
+    region: singapore
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: bytesize-backend
+          property: url
