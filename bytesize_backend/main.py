@@ -49,6 +49,7 @@ async def get_papers_endpoint(cite: bool = False, db: Session=Depends(get_db)) -
 
     for paper in papers: 
         res.append({
+            "id": paper.id,
             "title": paper.title,
             "authors": paper.authors,
             "published": paper.published_dt,
