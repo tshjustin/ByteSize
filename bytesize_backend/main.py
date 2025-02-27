@@ -40,7 +40,7 @@ app.add_middleware(
 )
 
 @app.get("/papers/{cite}")
-async def get_papers_endpoint(cite: bool = False, db: Session=Depends(get_db)) -> List[Dict]:
+async def get_papers_endpoint(cite: bool = False, db: Session=Depends(get_db)) -> List[Dict]: # TODO: Add pagination returns 
     """
     Recent papers have 0 citation
 

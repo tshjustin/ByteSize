@@ -74,7 +74,7 @@ def reorder_paper_ids(db: Session, is_cited: bool) -> None:
     for i, paper in enumerate(papers, 1):
         paper.id = i
 
-def get_papers(db: Session, days: int = 1, cite: bool = False) -> List[Paper]:
+def get_papers(db: Session, days: int = 30, cite: bool = False) -> List[Paper]:
     """
     Retrieves papers published within the last <days> days
     """
