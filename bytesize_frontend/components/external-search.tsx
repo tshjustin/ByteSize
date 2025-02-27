@@ -6,33 +6,27 @@ import { Search, Loader2, X, ChevronDown, ChevronUp } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { PaperCard } from "@/components/paper-card"
-import { searchExternalPapers, type ExternalPaper } from "@/lib/api"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { useDebounce } from "@/hooks/use-debounce"
 import { type CategoryType } from "@/lib/categories"
 import { type Paper } from "@/hooks/use-saved-papers"
-
-// Helper function to convert ExternalPaper to Paper
-function convertExternalPaperToPaper(externalPaper: ExternalPaper): Paper {
-  return {
-    id: externalPaper.id || String(Math.random()), // Fallback if id is missing
-    title: externalPaper.title,
-    authors: externalPaper.authors,
-    categories: externalPaper.categories as CategoryType[],
-    abstract: externalPaper.abstract,
-    publishedDate: externalPaper.publishedDate,
-    detailedSummary: externalPaper.detailedSummary,
-    laymanSummary: externalPaper.laymanSummary,
-    pdfUrl: externalPaper.url
-  }
-}
+import { searchPapers } from "@/lib/api"
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select"
 
 export function ExternalSearch() {
   const [query, setQuery] = React.useState("")
+  const [searchOption, setSearchOption] = React.useState("title")
   const [isSearching, setIsSearching] = React.useState(false)
-  const [results, setResults] = React.useState<ExternalPaper[]>([])
+  const [results, setResults] = React.useState<Paper[]>([])
   const [isExpanded, setIsExpanded] = React.useState(false)
+  const [error, setError] = React.useState<string | null>(null)
   const debouncedQuery = useDebounce(query, 500)
   const inputRef = React.useRef<HTMLInputElement>(null)
 
@@ -44,18 +38,41 @@ export function ExternalSearch() {
       }
 
       setIsSearching(true)
+      setError(null)
+      
       try {
-        const papers = await searchExternalPapers(debouncedQuery)
+        console.log(`Searching for: "${debouncedQuery}" by ${searchOption}`);
+        const papers = await searchPapers(searchOption, debouncedQuery)
+        console.log(`Search results:`, papers);
         setResults(papers)
       } catch (error) {
         console.error('Search error:', error)
+        setError("Failed to complete search. Please try again.")
       } finally {
         setIsSearching(false)
       }
     }
 
     performSearch()
-  }, [debouncedQuery])
+  }, [debouncedQuery, searchOption])
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (query.length < 3) return
+    
+    setIsSearching(true)
+    setError(null)
+    
+    try {
+      const papers = await searchPapers(searchOption, query)
+      setResults(papers)
+    } catch (error) {
+      console.error('Manual search error:', error)
+      setError("Failed to complete search. Please try again.")
+    } finally {
+      setIsSearching(false)
+    }
+  }
 
   return (
     <motion.div 
@@ -63,11 +80,24 @@ export function ExternalSearch() {
       layout
     >
       <div className="relative">
-        <div className="flex gap-2">
+        <form onSubmit={handleSearch} className="flex gap-2">
+          <Select
+            value={searchOption}
+            onValueChange={setSearchOption}
+          >
+            <SelectTrigger className="w-[120px]">
+              <SelectValue placeholder="Search by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="title">Title</SelectItem>
+              <SelectItem value="author">Author</SelectItem>
+            </SelectContent>
+          </Select>
+          
           <div className="relative flex-grow group">
             <Input
               ref={inputRef}
-              placeholder="Search external papers..."
+              placeholder={`Search by ${searchOption}...`}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className={cn(
@@ -88,6 +118,14 @@ export function ExternalSearch() {
               transition={{ duration: 0.2 }}
             />
           </div>
+          <Button 
+            type="submit" 
+            variant="default"
+            className="flex-shrink-0"
+            disabled={query.length < 3 || isSearching}
+          >
+            Search
+          </Button>
           <AnimatePresence mode="wait">
             {query && (
               <motion.div
@@ -98,6 +136,7 @@ export function ExternalSearch() {
                 <Button
                   variant="ghost"
                   size="icon"
+                  type="button"
                   onClick={() => {
                     setQuery("")
                     inputRef.current?.focus()
@@ -109,10 +148,10 @@ export function ExternalSearch() {
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
+        </form>
 
         <AnimatePresence>
-          {(isSearching || results.length > 0) && (
+          {(isSearching || results.length > 0 || error) && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -123,6 +162,16 @@ export function ExternalSearch() {
                 "shadow-lg border p-4 z-50"
               )}
             >
+              {error && (
+                <motion.div 
+                  className="text-center text-destructive py-4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  {error}
+                </motion.div>
+              )}
+              
               {isSearching ? (
                 <motion.div 
                   className="flex items-center justify-center py-8"
@@ -133,7 +182,7 @@ export function ExternalSearch() {
                   <Loader2 className="h-6 w-6 animate-spin text-primary" />
                 </motion.div>
               ) : results.length > 0 ? (
-                <div className="space-y-4">
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <p className="text-sm text-muted-foreground">
                       Found {results.length} papers
@@ -158,38 +207,32 @@ export function ExternalSearch() {
                     </Button>
                   </div>
                   
-                  <motion.div 
-                    className="grid gap-4"
-                    layout
-                  >
+                  <div className="divide-y">
                     <AnimatePresence mode="popLayout">
-                      {results.slice(0, isExpanded ? undefined : 3).map((paper, index) => (
+                      {results.slice(0, isExpanded ? undefined : 5).map((paper, index) => (
                         <motion.div
-                          key={paper.id}
-                          initial={{ opacity: 0, y: 20 }}
+                          key={paper.id || index}
+                          initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -20 }}
-                          transition={{ delay: index * 0.1 }}
-                          layout
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ delay: index * 0.05 }}
+                          className="py-2"
                         >
-                          <div className="flex items-start gap-2">
-                            <Badge
-                              variant="outline"
-                              className={cn(
-                                "flex-none transition-colors duration-200",
-                                paper.source === "arxiv" 
-                                  ? "border-green-500 text-green-700 hover:bg-green-50"
-                                  : "border-blue-500 text-blue-700 hover:bg-blue-50"
-                              )}
-                            >
-                              {paper.source === "arxiv" ? "arXiv" : "Semantic Scholar"}
-                            </Badge>
-                            <PaperCard paper={convertExternalPaperToPaper(paper)} />
-                          </div>
+                          <a 
+                            href={paper.pdfUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="block hover:bg-accent/50 p-2 rounded transition-colors"
+                          >
+                            <div className="font-medium">{paper.title}</div>
+                            <div className="text-xs text-muted-foreground truncate">
+                              {paper.pdfUrl}
+                            </div>
+                          </a>
                         </motion.div>
                       ))}
                     </AnimatePresence>
-                  </motion.div>
+                  </div>
                 </div>
               ) : query.length >= 3 ? (
                 <motion.p 

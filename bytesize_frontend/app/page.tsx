@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { PaperCard } from "@/components/paper-card"
 import { PaginationControls } from "@/components/pagination-controls"
 import { CategorySearch } from "@/components/category-search"
@@ -9,48 +9,20 @@ import { type CategoryType } from "@/lib/categories"
 import { motion, useScroll, useSpring, AnimatePresence } from "framer-motion"
 import { Separator } from "@/components/ui/separator"
 import { generatePaperContextId } from "@/lib/utils"
-
-const recentPapers = [
-  {
-    id: "1",
-    title: "Advances in Quantum Computing: A New Paradigm",
-    authors: ["Jane Smith", "John Doe"],
-    categories: ["Neural Networks", "Computer Vision", "MLOps"] as CategoryType[], 
-    abstract: "This paper explores recent breakthroughs in quantum computing, including advancements in quantum error correction, quantum circuit optimization, and the development of new quantum algorithms. The research demonstrates significant improvements in quantum coherence times and gate fidelities.",
-    publishedDate: "2024-03-20",
-    detailedSummary: "This comprehensive study delves into the latest advancements in quantum computing, focusing on three key areas: error correction, circuit optimization, and algorithm development. The research team achieved a 50% reduction in decoherence rates through novel error correction techniques and demonstrated a 3x improvement in quantum circuit efficiency. The paper also introduces a new quantum algorithm for molecular simulation that outperforms classical methods by an order of magnitude.",
-    laymanSummary: "Imagine computers that can solve complex problems millions of times faster than today's machines. This research shows how we're making quantum computers more reliable and efficient, similar to how we improved early classical computers. The team found ways to reduce errors, make the systems run more smoothly, and solve problems more efficiently. These improvements bring us closer to practical quantum computers that could revolutionize fields like drug discovery and climate modeling.",
-    pdfUrl: "https://example.com/quantum-computing-paper.pdf"
-  },
-  {
-    id: "2",
-    title: "Machine Learning in Healthcare: Predictive Analytics",
-    authors: ["Alice Johnson", "Bob Wilson"],
-    categories: ["LLM", "Ethics"] as CategoryType[],
-    abstract: "An examination of machine learning applications in healthcare, focusing on early disease detection, patient outcome prediction, and personalized treatment recommendations. The study presents novel approaches to handling medical data privacy and bias mitigation in healthcare AI systems.",
-    publishedDate: "2024-03-19",
-    detailedSummary: "This research paper presents a comprehensive framework for implementing machine learning in healthcare settings while maintaining patient privacy and ensuring ethical use of data. The study demonstrates a 40% improvement in early disease detection rates and a 25% increase in treatment efficacy through personalized recommendations. The researchers also developed new techniques for identifying and mitigating bias in healthcare AI systems.",
-    laymanSummary: "This study shows how artificial intelligence can help doctors make better decisions about patient care while keeping patient information private and ensuring fair treatment for everyone. The AI system can spot diseases earlier than traditional methods and suggest treatments that work better for each patient. The researchers also found ways to make sure the AI treats all patients fairly, regardless of their background.",
-    pdfUrl: "https://example.com/healthcare-ml-paper.pdf"
-  },
-  {
-    id: "3",
-    title: "Sustainable Energy Solutions for Urban Development",
-    authors: ["Maria Garcia", "David Chen"],
-    categories: ["Finetuning", "NLP"] as CategoryType[],
-    abstract: "Investigating renewable energy implementation in cities, with a focus on smart grid integration, energy storage solutions, and demand response systems. The research provides comprehensive analysis of urban energy consumption patterns and optimization strategies.",
-    publishedDate: "2024-03-18",
-    detailedSummary: "The paper presents a detailed analysis of renewable energy integration in urban environments, showcasing successful implementations across five major cities. Key findings include a 30% reduction in peak energy demand through smart grid systems and a 45% improvement in energy storage efficiency. The research also provides a framework for optimizing energy distribution based on real-time consumption patterns.",
-    laymanSummary: "Cities use a lot of energy, and this research shows how we can make them more environmentally friendly using renewable energy sources like solar and wind power. The team developed smart systems that can store energy more efficiently and distribute it based on when people need it most. These improvements could lead to cleaner cities with lower energy bills for residents.",
-    pdfUrl: "https://example.com/sustainable-energy-paper.pdf"
-  }
-]
+import { fetchRecentPapers } from "@/lib/api"
+import { Paper } from "@/hooks/use-saved-papers"
+import { AlertCircle } from "lucide-react"
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const ITEMS_PER_PAGE = 9
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedCategories, setSelectedCategories] = useState<CategoryType[]>([])
+  const [papers, setPapers] = useState<Paper[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll()
   const scaleX = useSpring(scrollYProgress, {
@@ -59,7 +31,26 @@ export default function Home() {
     restDelta: 0.001
   })
 
-  const filteredPapers = recentPapers.filter(paper => 
+  useEffect(() => {
+    async function loadPapers() {
+      setIsLoading(true)
+      setError(null)
+      
+      try {
+        const data = await fetchRecentPapers()
+        setPapers(data)
+      } catch (err) {
+        console.error("Failed to fetch papers:", err)
+        setError("Failed to load papers. Please try again later.")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    
+    loadPapers()
+  }, [])
+
+  const filteredPapers = papers.filter(paper => 
     selectedCategories.length === 0 || 
     selectedCategories.every(category => 
       paper.categories.includes(category)
@@ -100,6 +91,30 @@ export default function Home() {
     show: { opacity: 1, y: 0 }
   }
 
+  // Paper card skeleton loading state
+  const LoadingSkeleton = () => (
+    <>
+      {[...Array(ITEMS_PER_PAGE)].map((_, index) => (
+        <div key={index} className="rounded-md border border-border p-6 h-[420px] flex flex-col space-y-4">
+          <div className="space-y-3">
+            <Skeleton className="h-6 w-full" />
+            <Skeleton className="h-6 w-2/3" />
+            <div className="flex space-x-2">
+              <Skeleton className="h-5 w-16 rounded-full" />
+              <Skeleton className="h-5 w-16 rounded-full" />
+            </div>
+          </div>
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-32 w-full flex-grow" />
+          <div className="flex justify-between pt-4 border-t mt-auto">
+            <Skeleton className="h-10 w-24" />
+            <Skeleton className="h-5 w-28" />
+          </div>
+        </div>
+      ))}
+    </>
+  )
+
   return (
     <>
       <motion.div
@@ -129,35 +144,51 @@ export default function Home() {
             onClearCategories={handleClearCategories}
           />
         </motion.div>
+
+        {error && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
         <motion.div 
           className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
           variants={container}
           initial="hidden"
           animate="show"
         >
-          {currentPapers.map((paper, index) => {
-            // Create a new paper object with context-specific ID
-            const contextPaper = {
-              ...paper,
-              id: generatePaperContextId(paper.id, 'recent')
-            };
-            
-            return (
-              <motion.div
-                key={contextPaper.id}
-                variants={item}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                whileHover={{ scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
-                <PaperCard paper={contextPaper} />
-              </motion.div>
-            );
-          })}
+          {isLoading ? (
+            <LoadingSkeleton />
+          ) : (
+            <>
+              {currentPapers.map((paper) => {
+                // Create a new paper object with context-specific ID
+                const contextPaper = {
+                  ...paper,
+                  id: generatePaperContextId(paper.id, 'recent')
+                };
+                
+                return (
+                  <motion.div
+                    key={contextPaper.id}
+                    variants={item}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  >
+                    <PaperCard paper={contextPaper} />
+                  </motion.div>
+                );
+              })}
+            </>
+          )}
         </motion.div>
-        {filteredPapers.length === 0 ? (
+
+        {!isLoading && filteredPapers.length === 0 ? (
           <motion.div 
             className="text-center py-12"
             initial={{ opacity: 0 }}
