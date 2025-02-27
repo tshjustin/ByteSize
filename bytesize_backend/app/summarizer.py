@@ -45,6 +45,10 @@ def simple_summary(content: str) -> str:
 
     safe_decode = content.encode('utf-8', 'ignore').decode('utf-8')
 
+    if not safe_decode:
+        logger.info("No content")
+        return None 
+    
     completion = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{

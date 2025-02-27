@@ -7,7 +7,7 @@ Base = declarative_base()
 
 class Paper(Base):
     __tablename__ = "Papers"
-    id = Column(Integer, nullable=True)
+    id = Column(Integer, nullable=False)
     title = Column(String, primary_key=True)
     authors = Column(ARRAY(String), nullable=True)
     published = Column(DateTime, nullable=True)

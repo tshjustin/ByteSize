@@ -41,6 +41,9 @@ async def scheduled_scraper():
                             content = extract_pdf_content(link)
                             layman_summary = simple_summary(content)
 
+                            if not layman_summary:
+                                continue  
+
                             create_paper(
                                 db=db,
                                 title=title,
@@ -59,3 +62,34 @@ async def scheduled_scraper():
                 logger.warning("0 papers fetched")
         except Exception as e:
             logger.error(str(e))
+
+if __name__ == "__main__":
+
+    data = fetch_recent_papers(days_back=3)
+            
+    with next(get_db()) as db:
+        for paper_data in data:
+
+            title = paper_data.get('title')
+            authors = paper_data.get('authors')
+            published = paper_data.get('published')
+            summary = paper_data.get('summary', '')
+            link = paper_data.get('link')
+            categories = paper_data.get('categories')
+            citations = paper_data.get('citations', 0)
+
+            # summarizer 
+            content = extract_pdf_content(link)
+            layman_summary = simple_summary(content)
+
+            create_paper(
+                db=db,
+                title=title,
+                authors=authors,
+                published=published,
+                summary=summary,
+                layman_summary=layman_summary,
+                link=link,
+                categories=categories,
+                citations=citations
+            )

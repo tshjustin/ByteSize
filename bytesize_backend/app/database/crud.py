@@ -19,7 +19,14 @@ def create_paper(
     # Parse string from API output 
     published_dt = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
 
+    # find id dynamically 
+    is_cited = citations > 0
+    papers_count = db.query(func.count(Paper.id)).filter(
+        (Paper.citations > 0) if is_cited else (Paper.citations == 0)
+    ).scalar() or 0
+
     new_paper = Paper(
+        id=papers_count+1, 
         title=title,
         authors=authors,
         published=published_dt,
@@ -31,48 +38,9 @@ def create_paper(
     )
 
     db.add(new_paper)
-    db.flush() # put the pending changes in the DB but not yet fully committed => Ensure the right count for ID is obtained  
-
-    assign_paper_id(db, new_paper)
-
     db.commit()
     db.refresh(new_paper)
     return new_paper
-
-def assign_paper_id(db: Session, paper: Paper) -> None:
-    """
-    For papers with citations > 0: ID from [1:len(papers_with_citation>0)]
-    For papers with citations = 0: ID from [1:len(papers_with_citation=0)]
-    """
-    
-    is_cited = paper.citations > 0
-    
-    # Count number of cited / non-cited papers 
-    # +------------------------------------------+
-    # | query(func.count(Paper.id)) => Count(id) |
-    # | filter(...) => WHERE                     |
-    # | .scalar() => Returns count               |
-    # +------------------------------------------+
-    papers_count = db.query(func.count(Paper.id)).filter(
-        (Paper.citations > 0) if is_cited else (Paper.citations == 0)
-    ).scalar()
-    
-    # set sequential id 
-    paper.id = papers_count + 1
-
-    # perform reordering to remove gaps 
-    reorder_paper_ids(db, is_cited)
-
-def reorder_paper_ids(db: Session, is_cited: bool) -> None:
-    """
-    Reordering such that id starts from 1, and prevent gaps upon deleting 
-    """
-    papers = db.query(Paper).filter(
-        (Paper.citations > 0) if is_cited else (Paper.citations == 0)
-    ).order_by(desc(Paper.published)).all() # newest paper 
-
-    for i, paper in enumerate(papers, 1):
-        paper.id = i
 
 def get_papers(db: Session, days: int = 30, cite: bool = False) -> List[Paper]:
     """
@@ -96,6 +64,17 @@ def check_paper(db: Session, url: str) -> bool:
     is => Check if identify (memory matches) matches 
     """
     return db.query(Paper).filter_by(link=url).first() is None  
+
+def reorder_paper_ids(db: Session, is_cited: bool) -> None:
+    """
+    Reordering such that id starts from 1, and prevent gaps upon deleting 
+    """
+    papers = db.query(Paper).filter(
+        (Paper.citations > 0) if is_cited else (Paper.citations == 0)
+    ).order_by(desc(Paper.published)).all() # newest paper 
+
+    for i, paper in enumerate(papers, 1):
+        paper.id = i
 
 def delete_paper(db: Session, days_old: int = 60) -> int:
     """
