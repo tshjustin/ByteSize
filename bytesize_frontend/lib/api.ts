@@ -1,5 +1,5 @@
 import { type Paper } from "@/hooks/use-saved-papers";
-import { type CategoryType } from "@/lib/categories";
+import { type CategoryType, mapCategories } from "@/lib/categories";
 
 // Define the API base URL - can be changed in environment variables
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -18,14 +18,16 @@ export interface ApiPaper {
 
 // Convert API paper format to frontend Paper format
 export function convertApiPaperToPaper(apiPaper: ApiPaper): Paper {
+  // Map backend categories (cs.XX) to frontend categories
+  const mappedCategories = mapCategories(apiPaper.categories || []);
+  
   return {
     id: apiPaper.id?.toString() || Math.random().toString(36).substring(7),
     title: apiPaper.title,
     authors: apiPaper.authors || [],
-    categories: (apiPaper.categories || []) as CategoryType[],
+    categories: mappedCategories,
     abstract: apiPaper.summary || "",
     publishedDate: apiPaper.published || new Date().toISOString(),
-    detailedSummary: apiPaper.summary || "",
     laymanSummary: apiPaper.layman_summary || undefined,
     pdfUrl: apiPaper.link || "",
     citations: apiPaper.citations || 0
@@ -77,8 +79,8 @@ export async function searchPapers(option: string, query: string): Promise<Paper
     const safeOption = encodeURIComponent(option);
     const safeQuery = encodeURIComponent(query);
     
-    // Log the actual URL being called
-    const url = `${API_BASE_URL}/search/${safeOption}/${safeQuery}`;
+    // Add a max_results parameter to get more results when available
+    const url = `${API_BASE_URL}/search/${safeOption}/${safeQuery}?max_results=20`;
     console.log("Searching with URL:", url);
     
     const response = await fetch(url);
@@ -95,6 +97,8 @@ export async function searchPapers(option: string, query: string): Promise<Paper
     
     // Handle potential array or object response
     const papersData = Array.isArray(data) ? data : [data];
+    
+    // Process the papers through the converter
     return papersData.map(convertApiPaperToPaper);
   } catch (error) {
     console.error('Error searching papers:', error);
