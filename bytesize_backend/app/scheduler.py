@@ -8,6 +8,8 @@ from datetime import datetime, time, timedelta
 
 logger = setup_logging()
 
+MAX_TRIES = 5 
+
 async def scheduled_scraper():
     """
     Performs API scrapes daily at 00:00
@@ -23,48 +25,51 @@ async def scheduled_scraper():
         # scrape after wait 
         logger.info("scheduled paper scraping")
         try:
-            data = fetch_recent_papers(days_back=3)
-            
-            if data:
-                with next(get_db()) as db:
-                    for paper_data in data:
-                        try:
-                            title = paper_data.get('title')
-                            authors = paper_data.get('authors')
-                            published = paper_data.get('published')
-                            summary = paper_data.get('summary', '')
-                            link = paper_data.get('link')
-                            categories = paper_data.get('categories')
-                            citations = paper_data.get('citations', 0)
+            for look_back in range(MAX_TRIES):
+                data = fetch_recent_papers(days_back=look_back)
+                
+                if data:
+                    with next(get_db()) as db:
+                        for paper_data in data:
+                            try:
+                                title = paper_data.get('title')
+                                authors = paper_data.get('authors')
+                                published = paper_data.get('published')
+                                summary = paper_data.get('summary', '')
+                                link = paper_data.get('link')
+                                categories = paper_data.get('categories')
+                                citations = paper_data.get('citations', 0)
 
-                            # summarizer 
-                            content = extract_pdf_content(link)
-                            layman_summary = simple_summary(content)
+                                # summarizer 
+                                content = extract_pdf_content(link)
+                                layman_summary = simple_summary(content)
 
-                            if not layman_summary:
-                                continue  
+                                if not layman_summary:
+                                    continue  
 
-                            create_paper(
-                                db=db,
-                                title=title,
-                                authors=authors,
-                                published=published,
-                                summary=summary,
-                                layman_summary=layman_summary,
-                                link=link,
-                                categories=categories,
-                                citations=citations
-                            )
-                            logger.info(f" stored successfully")
-                        except Exception as e:
-                            logger.error("Failed to store", str(e))
-            else:
-                logger.warning("0 papers fetched")
+                                create_paper(
+                                    db=db,
+                                    title=title,
+                                    authors=authors,
+                                    published=published,
+                                    summary=summary,
+                                    layman_summary=layman_summary,
+                                    link=link,
+                                    categories=categories,
+                                    citations=citations
+                                )
+                                logger.info(f" stored successfully")
+                            except Exception as e:
+                                logger.error("Failed to store", str(e))
+                        break 
+                else:
+                    logger.warning(f" 0 papers fetched - {look_back+1}/5 Tries")
         except Exception as e:
             logger.error(str(e))
 
 if __name__ == "__main__":
 
+    # manually fetch papers 
     data = fetch_recent_papers(days_back=3)
             
     with next(get_db()) as db:
