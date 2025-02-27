@@ -1,9 +1,8 @@
-# ByteSize
-Making Academic Papers easier and more byte size to read 
+### ByteSize
 
-### LS 
-1. Packaging of payload / Search feature [manual | categorical]
+Making Academic Papers easier and more byte size to read. 
 
-2. HANDLE semantic scholar URL (impt)
+Try it yourself: 
 
-3. FE paper card hovering 
+### Techstack: 
+TypeScript | React | TailwindCSS | FastAPI | Postgres 

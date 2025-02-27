@@ -72,6 +72,7 @@ async def search_papers_endpoint(option: str, query: str, max_results: int = 10,
     """
 
     results = []
+    seen_url = set() 
     is_partial_query = len(query.split()) < 2 or len(query) < 10 # heuristic for short search 
     
     # local db search first 
@@ -101,6 +102,7 @@ async def search_papers_endpoint(option: str, query: str, max_results: int = 10,
     
     # add local results 
     for paper in local_papers:
+        seen_url.add(paper.link) # add to seen set 
         results.append({
             "id": paper.id,
             "title": paper.title,
@@ -130,10 +132,16 @@ async def search_papers_endpoint(option: str, query: str, max_results: int = 10,
         # Add arXiv results
         if arxiv_results:
             for paper in arxiv_results:
-   
+                if not paper["link"] in seen_url: # if title already from local db, skip
+                    continue
+
                 paper["layman_summary"] = None
                 paper["id"] = None
                 results.append(paper)
+
+                if len(results) >= max_results:
+                    break
+
     except Exception as e:
         logger.error("arXiv search fail")
     
