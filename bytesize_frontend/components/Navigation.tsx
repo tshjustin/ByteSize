@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { ScrollText, TrendingUp, Bookmark, Moon, Sun } from "lucide-react"
@@ -35,7 +36,14 @@ export function Navigation() {
       <div className="max-w-screen-xl mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Link href="/" className="text-xl font-bold">
+            <Link href="/" className="flex items-center text-xl font-bold">
+              <Image 
+                src="/kitty.png" 
+                alt="ByteSize Logo" 
+                width={32} 
+                height={32}
+                className="mr-2"
+              />
               ByteSize
             </Link>
             <div className="hidden md:flex space-x-1">

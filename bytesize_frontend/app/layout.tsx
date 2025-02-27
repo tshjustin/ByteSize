@@ -9,6 +9,10 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'ByteSize - Research Paper Reader',
   description: 'Discover and read research papers in a digestible format',
+  icons: {
+    icon: '/kitty.png',
+    apple: '/kitty.png',
+  },
 };
 
 export default function RootLayout({
@@ -18,6 +22,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/kitty.png" />
+      </head>
       <body className={inter.className}>
         <ThemeProvider
           attribute="class"
