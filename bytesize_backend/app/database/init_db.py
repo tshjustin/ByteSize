@@ -2,9 +2,9 @@
 
 import os
 from dotenv import load_dotenv
+from logger import setup_logging
 from app.database.paper import Base
 from sqlalchemy import create_engine, inspect
-from logger import setup_logging
 
 logger = setup_logging()
 
