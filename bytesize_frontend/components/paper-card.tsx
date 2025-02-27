@@ -163,14 +163,13 @@ export function PaperCard({ paper, showCitations = false, onUnsave }: PaperCardP
                 {paper.laymanSummary && (
                   <div className="bg-muted/50 p-4 rounded-lg border">
                     <h4 className="font-semibold mb-2 text-lg flex items-center">
-                      Simple Summary
-                      <Badge variant="secondary" className="ml-2">
-                        Easy to understand
-                      </Badge>
+                      ByteSize Summary
                     </h4>
-                    <p className="text-sm leading-loose">
-                      {paper.laymanSummary}
-                    </p>
+                    <div className="text-sm leading-loose space-y-4">
+                      {paper.laymanSummary.split('\n\n').map((paragraph, index) => (
+                        <p key={index}>{paragraph}</p>
+                      ))}
+                    </div>
                   </div>
                 )}
                 
