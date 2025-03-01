@@ -2,7 +2,7 @@ import { type Paper } from "@/hooks/use-saved-papers";
 import { type CategoryType, mapCategories } from "@/lib/categories";
 
 // Define the API base URL - can be changed in environment variables
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "") + "/api";
 
 export interface ApiPaper {
   id: number;

@@ -41,13 +41,16 @@ app.add_middleware(
     allow_headers=["*"], 
 )
 
+from fastapi import APIRouter
+api_router = APIRouter(prefix="/api")
+
 frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend", "out")
 if os.path.exists(frontend_path):
     app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
 else:
     print(f"Warning: Frontend build directory not found at {frontend_path}")
 
-@app.get("/papers/{cite}")
+@api_router.get("/papers/{cite}")
 async def get_papers_endpoint(cite: bool = False, db: Session=Depends(get_db)) -> List[Dict]: # TODO: Add pagination returns 
     """
     Recent papers have 0 citation
@@ -71,7 +74,7 @@ async def get_papers_endpoint(cite: bool = False, db: Session=Depends(get_db)) -
         })
     return res
 
-@app.get("/search/{option}/{query}")
+@api_router.get("/search/{option}/{query}")
 async def search_papers_endpoint(option: str, query: str, max_results: int = 10, db: Session=Depends(get_db)) -> List[Dict]:
     """
     Performs manual search based on option (title / author)
@@ -155,9 +158,11 @@ async def search_papers_endpoint(option: str, query: str, max_results: int = 10,
     
     return results[:max_results]
 
-@app.get("/ping")
+@api_router.get("/ping")
 async def ping():
     return "Ping Successful!"
+
+app.include_router(api_router)
 
 def start_server():
     port = int(os.environ.get("PORT", 8000))
@@ -165,7 +170,7 @@ def start_server():
         "main:app",
         host="0.0.0.0",
         port=port,
-        reload=True, # False if prod 
+        reload=False, # False if prod 
         log_level="info"
     )
 
