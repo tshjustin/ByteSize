@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'ByteSize - Research Paper Reader',
-  description: 'Discover and read research papers in a digestible format',
+  description: 'Discover and read research papers in a bytesize format',
   icons: {
     icon: '/kitty.png',
     apple: '/kitty.png',
