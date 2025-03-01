@@ -8,6 +8,7 @@ from fastapi import FastAPI, Depends
 from app.database.crud import get_papers
 from contextlib import asynccontextmanager
 from app.scheduler import scheduled_scraper
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from app.database.connection import get_db, Session # check db connection upon startup 
 from app.api.search_arxiv import search_papers, fuzzy_match_papers
@@ -40,7 +41,13 @@ app.add_middleware(
     allow_headers=["*"], 
 )
 
-@app.get("/papers/{cite}")
+frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend", "out")
+if os.path.exists(frontend_path):
+    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
+else:
+    print(f"Warning: Frontend build directory not found at {frontend_path}")
+
+@app.get("/api/papers/{cite}")
 async def get_papers_endpoint(cite: bool = False, db: Session=Depends(get_db)) -> List[Dict]: # TODO: Add pagination returns 
     """
     Recent papers have 0 citation
@@ -64,7 +71,7 @@ async def get_papers_endpoint(cite: bool = False, db: Session=Depends(get_db)) -
         })
     return res
 
-@app.get("/search/{option}/{query}")
+@app.get("/api/search/{option}/{query}")
 async def search_papers_endpoint(option: str, query: str, max_results: int = 10, db: Session=Depends(get_db)) -> List[Dict]:
     """
     Performs manual search based on option (title / author)
@@ -148,7 +155,7 @@ async def search_papers_endpoint(option: str, query: str, max_results: int = 10,
     
     return results[:max_results]
 
-@app.get("/ping")
+@app.get("/api/ping")
 async def ping():
     return "Ping Successful!"
 

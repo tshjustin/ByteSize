@@ -1,8 +1,8 @@
-### ByteSize 
+<img src="assets/kitty.png" width="25" height="auto" alt="ByteSize Logo" /> **ByteSize** 
 
-<img src="assets/kitty.png" width="200" height="auto" alt="ByteSize Logo" /> Making Academic Papers easier and more byte size to read. 
+Making Academic Papers easier and more byte size to read. 
 
-Try it yourself! : 
+Link: https://bytesize-38da46a02686.herokuapp.com/
 
 <img src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/typescript.png" width="36" height="36" alt="Typescript" />&nbsp;
 <img src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/react.png" width="36" height="36" alt="React" />&nbsp;

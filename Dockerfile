@@ -12,12 +12,17 @@ COPY bytesize_backend/requirements.txt backend/requirements.txt
 RUN pip install --no-cache-dir -r backend/requirements.txt
 
 COPY bytesize_frontend/package*.json frontend/
-RUN cd frontend && npm install
+WORKDIR /app/frontend
+RUN npm install
 
+WORKDIR /app
 COPY bytesize_backend backend
 COPY bytesize_frontend frontend
 
-RUN cd frontend && npm run build
+WORKDIR /app/frontend
+RUN npm run build
+
+WORKDIR /app
 
 EXPOSE 8000
 

@@ -2,7 +2,7 @@ import { type Paper } from "@/hooks/use-saved-papers";
 import { type CategoryType, mapCategories } from "@/lib/categories";
 
 // Define the API base URL - can be changed in environment variables
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
 export interface ApiPaper {
   id: number;
@@ -37,7 +37,7 @@ export function convertApiPaperToPaper(apiPaper: ApiPaper): Paper {
 // Fetch recent papers
 export async function fetchRecentPapers(): Promise<Paper[]> {
   try {
-    console.log("Fetching recent papers from:", `${API_BASE_URL}/papers/false`);
+    console.log("Fetching recent papers from:", `${API_BASE_URL}/api/papers/false`);
     const response = await fetch(`${API_BASE_URL}/papers/false`);
     
     if (!response.ok) {
@@ -56,7 +56,7 @@ export async function fetchRecentPapers(): Promise<Paper[]> {
 // Fetch highly cited papers
 export async function fetchHighlyCitedPapers(): Promise<Paper[]> {
   try {
-    console.log("Fetching highly cited papers from:", `${API_BASE_URL}/papers/true`);
+    console.log("Fetching highly cited papers from:", `${API_BASE_URL}/api/papers/true`);
     const response = await fetch(`${API_BASE_URL}/papers/true`);
     
     if (!response.ok) {
@@ -80,7 +80,7 @@ export async function searchPapers(option: string, query: string): Promise<Paper
     const safeQuery = encodeURIComponent(query);
     
     // Add a max_results parameter to get more results when available
-    const url = `${API_BASE_URL}/search/${safeOption}/${safeQuery}?max_results=20`;
+    const url = `${API_BASE_URL}/api/search/${safeOption}/${safeQuery}?max_results=20`;
     console.log("Searching with URL:", url);
     
     const response = await fetch(url);
@@ -109,7 +109,7 @@ export async function searchPapers(option: string, query: string): Promise<Paper
 // Health check ping
 export async function pingServer(): Promise<boolean> {
   try {
-    const response = await fetch(`${API_BASE_URL}/ping`);
+    const response = await fetch(`${API_BASE_URL}/api/ping`);
     return response.ok;
   } catch (error) {
     console.error('Server ping failed:', error);
