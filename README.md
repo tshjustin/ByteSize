@@ -1,6 +1,6 @@
 ### ByteSize 
 
-![alt text](assets/kitty.png) Making Academic Papers easier and more byte size to read. 
+<img src="assets/kitty.png" width="200" height="auto" alt="ByteSize Logo" /> Making Academic Papers easier and more byte size to read. 
 
 Try it yourself! : 
 
