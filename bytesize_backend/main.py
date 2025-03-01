@@ -47,7 +47,7 @@ if os.path.exists(frontend_path):
 else:
     print(f"Warning: Frontend build directory not found at {frontend_path}")
 
-@app.get("/api/papers/{cite}")
+@app.get("/papers/{cite}")
 async def get_papers_endpoint(cite: bool = False, db: Session=Depends(get_db)) -> List[Dict]: # TODO: Add pagination returns 
     """
     Recent papers have 0 citation
@@ -71,7 +71,7 @@ async def get_papers_endpoint(cite: bool = False, db: Session=Depends(get_db)) -
         })
     return res
 
-@app.get("/api/search/{option}/{query}")
+@app.get("/search/{option}/{query}")
 async def search_papers_endpoint(option: str, query: str, max_results: int = 10, db: Session=Depends(get_db)) -> List[Dict]:
     """
     Performs manual search based on option (title / author)
@@ -155,7 +155,7 @@ async def search_papers_endpoint(option: str, query: str, max_results: int = 10,
     
     return results[:max_results]
 
-@app.get("/api/ping")
+@app.get("/ping")
 async def ping():
     return "Ping Successful!"
 
