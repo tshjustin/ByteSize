@@ -44,12 +44,6 @@ app.add_middleware(
 from fastapi import APIRouter
 api_router = APIRouter(prefix="/api")
 
-frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend", "out")
-if os.path.exists(frontend_path):
-    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
-else:
-    print(f"Warning: Frontend build directory not found at {frontend_path}")
-
 @api_router.get("/papers/{cite}")
 async def get_papers_endpoint(cite: bool = False, db: Session=Depends(get_db)) -> List[Dict]: # TODO: Add pagination returns 
     """
@@ -163,6 +157,12 @@ async def ping():
     return "Ping Successful!"
 
 app.include_router(api_router)
+
+frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend", "out")
+if os.path.exists(frontend_path):
+    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
+else:
+    print("Frontend build directory not")
 
 def start_server():
     port = int(os.environ.get("PORT", 8000))
