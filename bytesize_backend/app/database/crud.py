@@ -1,7 +1,7 @@
 from typing import List 
-from sqlalchemy import func, desc
 from sqlalchemy.orm import Session
 from app.database.paper import Paper
+from sqlalchemy import func, desc, asc
 from datetime import datetime, timedelta
 
 def create_paper(
@@ -45,13 +45,13 @@ def create_paper(
 def get_papers(db: Session, days: int = 30, cite: bool = False) -> List[Paper]:
     """
     Retrieves papers published within the last <days> days
+    For recent papers (cite=False), returns them sorted by published date (chronologically, earliest first)
+    For cited papers (cite=True), returns them ordered by id
     """
-    # recent papers 
     if not cite: 
         cutoff_date = datetime.utcnow() - timedelta(days=days)
-        return db.query(Paper).filter(Paper.published >= cutoff_date).order_by(Paper.id).all()
+        return db.query(Paper).filter(Paper.published >= cutoff_date).order_by(asc(Paper.published)).all()
     
-    # else return highly cited, where the citation count is not 0 
     return db.query(Paper).filter(Paper.citations != 0).order_by(Paper.id).all()
 
 def check_paper(db: Session, url: str) -> bool: 
