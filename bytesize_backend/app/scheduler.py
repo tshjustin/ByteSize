@@ -8,7 +8,7 @@ from datetime import datetime, time, timedelta
 
 logger = setup_logging()
 
-MAX_TRIES = 5 
+MAX_TRIES = 8 
 
 async def scheduled_scraper():
     """

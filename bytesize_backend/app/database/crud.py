@@ -50,7 +50,7 @@ def get_papers(db: Session, days: int = 30, cite: bool = False) -> List[Paper]:
     """
     if not cite: 
         cutoff_date = datetime.utcnow() - timedelta(days=days)
-        return db.query(Paper).filter(Paper.published >= cutoff_date).order_by(asc(Paper.published)).all()
+        return db.query(Paper).filter(Paper.published >= cutoff_date).order_by(desc(Paper.published)).all()
     
     return db.query(Paper).filter(Paper.citations != 0).order_by(Paper.id).all()
 
