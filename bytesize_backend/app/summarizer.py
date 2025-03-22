@@ -10,9 +10,13 @@ from logger import setup_logging
 load_dotenv()
 logger = setup_logging()
 
-OAI_KEY = os.getenv("OAI_KEY")
+OAI_KEY = os.getenv("OPENROUTER_API_KEY")
+OR_ENDPOINT = os.getenv("OPENROUTER_ENDPOINT")
 
-client = OpenAI(api_key=OAI_KEY)
+headers = {
+    "Authorization": f"Bearer {OAI_KEY}",
+    "Content-Type": "application/json",
+}
 
 def extract_pdf_content(url: str) -> None:
     """
@@ -49,9 +53,9 @@ def simple_summary(content: str) -> str:
         logger.info("No content")
         return None 
     
-    completion = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{
+    data = {
+        "model": "openai/gpt-3.5-turbo",
+        "messages": [{
             "role": "system", 
             "content": "You are a helpful assistant that explains high level technical reports in layman terms." # dont need to line break inside a list 
                         "Ensure the output has 2 paragraphs, the first paragraph is a layman abstraction."
@@ -62,10 +66,12 @@ def simple_summary(content: str) -> str:
                 "role": "user",
                 "content": safe_decode 
             }
-        ]
-    )
+        ],
+        "max_tokens": 2048
+    }
+    response = requests.post(OR_ENDPOINT, headers=headers, json=data)
 
-    return completion.choices[0].message.content 
+    return response.json()["choices"][0]["message"]["content"]
 
 if __name__ == "__main__":
     from app.database.connection import get_db
