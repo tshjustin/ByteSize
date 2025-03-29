@@ -252,3 +252,5 @@ export function PaperCard({ paper, showCitations = false, onUnsave }: PaperCardP
     </motion.div>
   )
 }
+
+export default PaperCard

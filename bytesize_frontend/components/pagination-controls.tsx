@@ -1,40 +1,72 @@
-"use client"
+'use client';
 
-import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { FC } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation'; // Use next/navigation
+import { Button } from '@/components/ui/button'; // Assuming shadcn button
 
 interface PaginationControlsProps {
-  currentPage: number
-  totalPages: number
-  onPageChange: (page: number) => void
+  currentPage: number;
+  pageSize: number;
+  totalItems: number; 
+  baseUrl: string;
 }
 
-export function PaginationControls({
+const PaginationControls: FC<PaginationControlsProps> = ({
   currentPage,
-  totalPages,
-  onPageChange,
-}: PaginationControlsProps) {
+  pageSize,
+  totalItems,
+  baseUrl,
+}) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const totalPages = Math.ceil(totalItems / pageSize);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages) {
+      return; 
+    }
+
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    current.set('page', String(newPage));
+    current.set('per_page', String(pageSize)); // Keep per_page consistent if needed
+
+    const search = current.toString();
+    const query = search ? `?${search}` : '';
+
+    router.push(`${baseUrl}${query}`);
+  };
+
+  // Don't render controls if there's only one page or no items
+  if (totalPages <= 1) {
+    return null;
+  }
+
   return (
-    <div className="flex items-center justify-center space-x-2 mt-8">
+    <div className="flex items-center justify-center space-x-2 py-4">
       <Button
         variant="outline"
-        size="icon"
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
+        size="sm"
+        onClick={() => handlePageChange(currentPage - 1)}
+        disabled={currentPage <= 1}
       >
-        <ChevronLeft className="h-4 w-4" />
+        Previous
       </Button>
-      <div className="text-sm">
+      <span className="text-sm text-muted-foreground">
         Page {currentPage} of {totalPages}
-      </div>
+      </span>
+       {/* Optional: Add page number buttons if desired */}
+       {/* Consider a more complex component for many pages */}
       <Button
         variant="outline"
-        size="icon"
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
+        size="sm"
+        onClick={() => handlePageChange(currentPage + 1)}
+        disabled={currentPage >= totalPages}
       >
-        <ChevronRight className="h-4 w-4" />
+        Next
       </Button>
     </div>
-  )
-}
+  );
+};
+
+export default PaginationControls;

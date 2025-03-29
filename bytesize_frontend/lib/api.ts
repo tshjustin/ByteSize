@@ -1,110 +1,84 @@
-import { type Paper } from "@/hooks/use-saved-papers";
-import { type CategoryType, mapCategories } from "@/lib/categories";
+import { Paper } from './types'; // Assuming you have a types file
 
-// Define the API base URL - can be changed in environment variables
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "") + "/api";
-
-export interface ApiPaper {
-  id: number;
-  title: string;
-  authors: string[];
-  published: string;
-  summary: string;
-  layman_summary: string | null;
-  link: string;
-  categories: string[];
-  citations: number;
+// Define the expected structure of the API response for paginated papers
+export interface PaginatedPapersResponse {
+  papers: Paper[];
+  total_papers: number;
 }
 
-// Convert API paper format to frontend Paper format
-export function convertApiPaperToPaper(apiPaper: ApiPaper): Paper {
-  // Map backend categories (cs.XX) to frontend categories
-  const mappedCategories = mapCategories(apiPaper.categories || []);
-  
-  return {
-    id: apiPaper.id?.toString() || Math.random().toString(36).substring(7),
-    title: apiPaper.title,
-    authors: apiPaper.authors || [],
-    categories: mappedCategories,
-    abstract: apiPaper.summary || "",
-    publishedDate: apiPaper.published || new Date().toISOString(),
-    laymanSummary: apiPaper.layman_summary || undefined,
-    pdfUrl: apiPaper.link || "",
-    citations: apiPaper.citations || 0
-  };
-}
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'; // Fallback for local dev
 
-// Fetch recent papers
-export async function fetchRecentPapers(): Promise<Paper[]> {
+export async function fetchPapers(
+  type: 'recent' | 'cited', // Use specific types
+  page: number = 1,
+  pageSize: number = 9
+): Promise<PaginatedPapersResponse> {
   try {
-    console.log("Fetching recent papers from:", `${API_BASE_URL}/papers/false`);
-    const response = await fetch(`${API_BASE_URL}/papers/false`);
-    
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
+    // Construct the URL with pagination query parameters
+    const url = `${API_URL}/api/papers/${type}?page=${page}&page_size=${pageSize}`;
+    console.log("Fetching papers from:", url); // Log the URL being fetched
+
+    const res = await fetch(url, { cache: 'no-store' }); // Disable caching for dynamic data
+
+    if (!res.ok) {
+      // Log more details on error
+      const errorBody = await res.text();
+      console.error(`API Error (${res.status}): ${errorBody}`);
+      throw new Error(`Failed to fetch ${type} papers (status: ${res.status})`);
     }
-    
-    const data: ApiPaper[] = await response.json();
-    console.log("Recent papers data:", data);
-    return data.map(convertApiPaperToPaper);
+
+    const data: PaginatedPapersResponse = await res.json();
+    console.log(`Fetched ${data.papers.length} ${type} papers (Total: ${data.total_papers}) for page ${page}`);
+
+     // Optional: Add basic validation on the returned data
+     if (!data || !Array.isArray(data.papers) || typeof data.total_papers !== 'number') {
+      console.error("Invalid data structure received from API:", data);
+      throw new Error("Invalid data format received from API");
+    }
+
+    return data;
   } catch (error) {
-    console.error('Error fetching recent papers:', error);
-    return [];
+    console.error(`Error in fetchPapers (${type}, page ${page}):`, error);
+    // Return a default structure on error to prevent crashes downstream
+    // Or re-throw if the calling component handles errors robustly
+    return { papers: [], total_papers: 0 };
   }
 }
 
-// Fetch highly cited papers
-export async function fetchHighlyCitedPapers(): Promise<Paper[]> {
-  try {
-    console.log("Fetching highly cited papers from:", `${API_BASE_URL}/papers/true`);
-    const response = await fetch(`${API_BASE_URL}/papers/true`);
-    
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
-    
-    const data: ApiPaper[] = await response.json();
-    console.log("Highly cited papers data:", data);
-    return data.map(convertApiPaperToPaper);
-  } catch (error) {
-    console.error('Error fetching highly cited papers:', error);
-    return [];
-  }
-}
 
-// Search papers
-export async function searchPapers(option: string, query: string): Promise<Paper[]> {
-  try {
-    // Ensure the search URL is properly encoded
-    const safeOption = encodeURIComponent(option);
-    const safeQuery = encodeURIComponent(query);
-    
-    // Add a max_results parameter to get more results when available
-    const url = `${API_BASE_URL}/search/${safeOption}/${safeQuery}?max_results=20`;
-    console.log("Searching with URL:", url);
-    
-    const response = await fetch(url);
-    
-    if (!response.ok) {
-      console.error(`Search API returned status: ${response.status}`);
-      const errorText = await response.text();
-      console.error(`Error response: ${errorText}`);
-      throw new Error(`API error: ${response.status}`);
+export async function searchPapers(
+    option: 'title' | 'author',
+    query: string,
+    maxResults: number = 10 // Keep maxResults for search for now
+  ): Promise<Paper[]> { // Search still returns just the array for now
+    try {
+      const encodedQuery = encodeURIComponent(query);
+      const url = `${API_URL}/api/search/${option}/${encodedQuery}?max_results=${maxResults}`;
+      console.log("Searching papers:", url);
+
+      const res = await fetch(url, { cache: 'no-store' });
+
+      if (!res.ok) {
+        const errorBody = await res.text();
+        console.error(`API Search Error (${res.status}): ${errorBody}`);
+        throw new Error(`Failed to search papers (status: ${res.status})`);
+      }
+
+      const data: Paper[] = await res.json(); // Expecting direct array for search
+      console.log(`Found ${data.length} papers matching search.`);
+
+      if (!Array.isArray(data)) {
+        console.error("Invalid search data structure received:", data);
+        throw new Error("Invalid search data format received");
+      }
+      return data;
+    } catch (error) {
+      console.error(`Error in searchPapers (query: ${query}):`, error);
+      return []; // Return empty array on error
     }
-    
-    const data = await response.json();
-    console.log("Search response data:", data);
-    
-    // Handle potential array or object response
-    const papersData = Array.isArray(data) ? data : [data];
-    
-    // Process the papers through the converter
-    return papersData.map(convertApiPaperToPaper);
-  } catch (error) {
-    console.error('Error searching papers:', error);
-    return [];
   }
-}
+
+// Add other API functions if needed (e.g., save paper, fetch saved papers if backend handles it)
 
 // Health check ping
 export async function pingServer(): Promise<boolean> {

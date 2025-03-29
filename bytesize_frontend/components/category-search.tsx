@@ -119,3 +119,5 @@ export function CategorySearch({
     </div>
   )
 }
+
+export default CategorySearch
